@@ -1,0 +1,31 @@
+{
+  "type": "module",
+  "name": "just",
+  "version": "4.0.2",
+  "description": "JUST for node. Transform Json documents using JUST language.",
+  "keywords": [
+    "json",
+    "xslt"
+  ],
+  "homepage": "https://github.com/WorkMaze/JUST.net",
+  "license": "MIT",
+  "main": "just",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/WorkMaze/JUST.net.git"
+  },
+  "dependencies": {
+    "jsonpath": "^1.1.0"
+  },
+  "devDependencies": {
+    "cypress": "^6.7.1"
+  },
+  "bugs": {
+    "url": "https://github.com/WorkMaze/JUST.net/issues"
+  },
+  "scripts": {
+    "start": "node.exe app.js",
+    "test": "cypress open"
+  },
+  "author": "Courela"
+}
