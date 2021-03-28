@@ -51,6 +51,8 @@ class JsonTransformer extends Transformer {
 
                         if (Array.isArray(fnResult)) {
                             result = fnResult;
+                        } else if (fnResult === null) {
+                            return null;
                         } else {
                             result = typeof fnResult === 'string' ? fnResult : Object.assign(result, fnResult);
                         }
@@ -80,15 +82,28 @@ class JsonTransformer extends Transformer {
 
     parseKeyFunction(key, token, inputJson, parentArray, currentElementArray, idx) {
         let result = {};
+        let properties = false;
         let output = this.parseFunction(key, inputJson, parentArray, currentElementArray, idx);
         if (output || output === 0) {
             if (output.isProperty) {
-                result[output.value] = this.recursiveEvaluate(token, inputJson, parentArray, currentElementArray, idx);
-                //return output;
+                return output;
             }
-            else if (output.loop) {
-                let alias = output.alias;
-                let elements = output.elements;
+            else if (output.isLoop) {
+                let alias = 'loop' + ++this._loopCounter;
+                let elements = null;
+                if (Array.isArray(output.value)) { 
+                    elements = output.value;
+                } else if (output.value && Object.keys(output.value).length > 0) {
+                    elements = Object.entries(output.value).reduce((arr, el) => {
+                            let obj = {};
+                            obj[el[0]] = el[1];
+                            arr.push(obj);
+                            return arr;
+                        }, []);
+                    properties = true;
+                } else {
+                    elements = output.value;
+                }
 
                 if (!parentArray) {
                     parentArray = { root: inputJson };
@@ -100,7 +115,7 @@ class JsonTransformer extends Transformer {
                     currentElementArray = {};
                 }
                 currentElementArray[alias] = parentArray[alias];
-                result = this.parseLoop(token, elements, parentArray, currentElementArray);
+                result = this.parseLoop(token, elements, properties, parentArray, currentElementArray);
                 delete currentElementArray[alias];
             } else {
                 result = this.recursiveEvaluate(token, inputJson, parentArray, currentElementArray, idx);
@@ -111,40 +126,24 @@ class JsonTransformer extends Transformer {
         return result;
     }
 
-    parseLoop(token, elements, parentArray, currentElementArray) {
-        let result = null;
-        let arr = null;
-        let properties = false;
-        let values = null;
-        let loopKeys = null;
-        if (Array.isArray(elements)) {
-            arr = elements;
-            result = [];            
-        } else {
-            if (!elements) {
-                return null;
-            }
-            result = {};
-            let v = Object.entries(elements);
-            arr = v.map(el => el[0]);
-            values = v.map(el => el[1]);
-            properties = true;
-            loopKeys = Object.keys(token);
+    parseLoop(token, elements, isPropertyLoop, parentArray, currentElementArray) {
+        if (!elements) {
+            return null;
+        }
+        let result = isPropertyLoop ? {} : [];
+        if (!Array.isArray(elements) && !Object.keys(elements).length > 0) {
+            return elements;
         }
 
-        arr.forEach((el, i) => {
-            if (properties) {
-                loopKeys.forEach((k, i) => {
+        let loopKeys = Object.keys(token);
+        elements.forEach((el, i) => {
+            if (isPropertyLoop) {
+                loopKeys.forEach(key => {
                     let prop = el;
-                    if (k.startsWith('#')) {
-                        prop = this.parseKeyFunction(k, token, elements[el], parentArray, currentElementArray, i);
-                        // let o = {};
-                        // o[p] = null;
-                        result = Object.assign(result, prop); 
+                    if (key.startsWith('#')) {
+                        prop = this.parseKeyFunction(key, token, el, parentArray, currentElementArray, i);
+                        result[prop.value] = this.parseFunction(token[loopKeys], el, parentArray, currentElementArray);
                     } else {
-                        var input = { };
-                        Object.defineProperty(input, prop, { value: null });
-                        
                         let newObj = this.recursiveEvaluate(typeof token === 'string' ? token : Object.assign({}, token), elements[el], parentArray, currentElementArray['loop' + this._loopCounter], i);
                         result = Object.assign(result, newObj);
                     }
@@ -177,21 +176,13 @@ class JsonTransformer extends Transformer {
                     args[i] = this.recursiveEvaluate(el, inputJson, parentArray, currentElementArray, idx);
                 });
                 if (currentElementArray) {
-                    //let j = Object.keys(currentElementArray);
-                    //args.push(currentElementArray[j[j.length - 1]]);
                     args.push(currentElementArray);
                     args.push(idx);
                 }
                 result = functions.execute(functionName, args, inputJson);
             }
-
-            if (functionName === 'loop') {
-                result = { loop: true, alias: args[1] ? args[1] : 'loop' + ++this._loopCounter, elements: result };
-            } /* else if (functionName === 'eval') {
-                result = { isProperty: true, value: result }
-            } */
         }
-        return result;
+        return result.isProperty || result.isLoop || typeof result == 'string' ? result : result.value;
     }
 
     parseArgument(argument, inputJson, parentArray, currentArrayElement, idx) {

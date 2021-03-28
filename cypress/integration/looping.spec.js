@@ -131,7 +131,7 @@ context('Loops', () => {
     });
 
     it('loop over properties', () => {
-        const input = '{ "animals": { "cat": { "legs": 4, "sound": "meow" }, "dog": { "legs": 4, "sound": "woof" } }, "spell_numbers": { "3": "three", "2": "two", "1": "one" } }';
+        const input = '{ "animals": { "cat": { "legs": 4, "sound": "meow" }, "dog": { "legs": 4, "sound": "woof" } }, "spell_numbers": { \"3\": "three", \"2\": "two", \"1\": "one" } }';
         const transformer = '{ "sounds": { "#loop($.animals)": { "#eval(#currentproperty())": "#currentvalueatpath($..sound)" } }, "number_index": { "#loop($.spell_numbers)": { "#eval(#currentindex())": "#currentvalueatpath(#concat($.,#currentproperty()))" } }}';
 
         var result = new JsonTransformer({ evaluationMode: [ 'strict' ]}).transform(transformer, input);
@@ -172,7 +172,7 @@ context('Loops', () => {
 
         var result = new JsonTransformer({ evaluationMode: 'strict' }).transform(transformer, input);
 
-        expect(result).to.deep.equal({ number: "10" });
+        expect(result).to.deep.equal({ result: [{ number: "10" }] });
     });
 
     it('looping alias', () => {

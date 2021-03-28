@@ -12,7 +12,7 @@
   "main": "just",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/WorkMaze/JUST.net.git"
+    "url": "git+https://github.com/Courela/JUST.Node.git"
   },
   "dependencies": {
     "jsonpath": "^1.1.0"

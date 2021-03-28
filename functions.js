@@ -21,7 +21,7 @@ let tokenRelatedFunctions = {
 
 function valueof(obj, path) {
     let result = null;
-    if (/[/[.+/]]/.test(path)) {
+    if (/\[[^\d].+\]/.test(path)) {
         result = jsonpath.query(obj, path);
     } else {
         let output = jsonpath.query(obj, path);
@@ -417,18 +417,13 @@ function lastIndex(obj, arr, idx) {
 }
 
 function currentProperty(obj, arr, idx) {
-    // if (typeof arr === 'object') {
-    //     let entries = Object.entries(arr);
-    //     let val = entries[idx][1];
-    //     let key = Object.keys(val)[idx];
-    //     return key;
-    // } else {
-        return Object.keys(arr)[idx];
-    //}
+    return Object.keys(obj)[0];
 }
 
 function currentValueAtPath(obj, path, arr, idx) {
     if (path === '$') {
+        return obj;
+    } else if (typeof obj === 'string') {
         return obj;
     }
     return valueof(obj, path);
@@ -443,23 +438,34 @@ function lastValueAtPath(obj, path, arr, idx) {
 
 function execute(functionName, args, input) {
     let result = null;
+
+    let output = null;
     if (Object.keys(tokenRelatedFunctions).includes(functionName)) {
-        result = tokenRelatedFunctions[functionName](input, ...args);
+        output = tokenRelatedFunctions[functionName](input, ...args);
     } else if (Object.keys(autonomousFunctions).includes(functionName)) {
-        result = autonomousFunctions[functionName](...args);
+        output = autonomousFunctions[functionName](...args);
     } else if (Object.keys(conditionalFunctions).includes(functionName)) {
-        result = conditionalFunctions[functionName](...args);
+        output = conditionalFunctions[functionName](...args);
     } else if (Object.keys(decimalPlacesFunctions).includes(functionName)) {
-        result = decimalPlacesFunctions[functionName](...args);
+        output = decimalPlacesFunctions[functionName](...args);
     } else if (Object.keys(bulkFunctions).includes(functionName)) {
-        result = bulkFunctions[functionName](input, ...args);
+        output = bulkFunctions[functionName](input, ...args);
     } else if (Object.keys(arrayFunctions).includes(functionName)) {
-        result = arrayFunctions[functionName](args);
+        output = arrayFunctions[functionName](args);
     } else if (Object.keys(arrayAndElementFunctions).includes(functionName)) {
-        result = arrayAndElementFunctions[functionName](input, ...args);
+        output = arrayAndElementFunctions[functionName](input, ...args);
     } else {
         throw 'Invalid function: ' + functionName;
     }
+
+    if (functionName === 'loop') {
+        result = { isProperty: false, isLoop: true, value: output };
+    } else if (functionName === 'eval') {
+        result = { isProperty: true, isLoop: false, value: output }
+    } else {
+        result = { isProperty: false, isLoop: false, value: output };
+    }
+
     return result;
 }
 
