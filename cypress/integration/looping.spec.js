@@ -190,7 +190,7 @@ context('Loops', () => {
 
         var result = new JsonTransformer({ evaluationMode: [ 'strict' ]}).transform(transformer, input);
 
-        expect(result).to.deep.equal({ hello: [{ CurrentIndex: 0, Details: [{ CurrentCountry: "Iceland", OuterName: "E2" }] },{ CurrentIndex: 1, Details: [{ CurrentCountry: "Denmark", OuterName: "E1 "}] }] });
+        expect(result).to.deep.equal({ hello: [{ CurrentIndex: 0, Details: [{ CurrentCountry: "Iceland", OuterName: "E2" }] },{ CurrentIndex: 1, Details: [{ CurrentCountry: "Denmark", OuterName: "E1"}] }] });
     });
 
     it('bulk functions', () => {

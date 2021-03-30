@@ -62,8 +62,8 @@ function splitArguments(args) {
 
 function unescape(str) {
     return !isFunction(str) ?
-        str.replace(/\/([\/(),])/, "$1") :
-        str;
+        str.replace(/\/([\/(),])/, "$1").trim() :
+        str.trim();
 }
 
 function isFunction(val) {

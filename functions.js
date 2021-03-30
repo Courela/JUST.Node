@@ -169,8 +169,12 @@ function length() {
     throw 'Not implemented';
 }
 
-function loop(obj, path) {
-    return valueof(obj, path);
+function loop(obj, str, path, alias) {
+    if (typeof str === 'string') {
+        return valueof(obj, str);
+    } else {
+        return valueof(calculateAlias(obj, str, alias), path);
+    }
 }
 
 let autonomousFunctions = {
@@ -326,11 +330,24 @@ let bulkFunctions = {
     "delete": deleteFn
 };
 
-function copy(obj, path) {
-    return valueof(obj, path);
+function copy(obj, str, path, alias) {
+    let result = null;
+    if (typeof str === 'string') {
+        result = valueof(obj, str);
+    } else {
+        result = valueof(calculateAlias(obj, str, alias), path);
+    }
+    return result && result.length === 1 ? result[0] : result;
 }
 
-function replace(obj, path, newObj) {
+function replace(obj, str, path, newObj) {
+    if (!newObj) {
+        newObj = path;
+        path = str;
+    } else {
+        obj = calculateAlias(obj, str);
+    }
+
     let objToBeReplaced = obj;
 
     let keyToBeReplaced = null;
@@ -352,7 +369,13 @@ function replace(obj, path, newObj) {
     return obj;
 }
 
-function deleteFn(obj, path) {
+function deleteFn(obj, str, path) {
+    if (typeof str === 'string') {
+        path = str;
+    } else {
+        obj = calculateAlias(obj, str);
+    }
+
     let objToBeDeleted = obj;
 
     let keyToBeDeleted = null;
@@ -400,57 +423,91 @@ let arrayAndElementFunctions = {
     "lastvalueatpath": lastValueAtPath
 };
 
-function currentValue(obj) {
-    return obj;
+function calculateAlias(obj, el, alias) {
+    let result = obj;
+    if (el) {
+        if (alias && el[alias]) {
+            result = el[alias];
+        } else {
+            let keys = Object.keys(el);
+            alias = keys[keys.length - 1];
+            result = el[alias];
+        }
+    }
+    return result;
 }
 
-function currentIndex(obj, arr, idx) {
-    return idx;
+function currentValue(obj, el, alias) {
+    return calculateAlias(obj, el, alias);
 }
 
-function lastValue(obj, arr, idx) {
-    return arr[arr.length - 1];
+function currentIndex(obj, el, alias) {
+    el = calculateAlias(obj, el, alias);
+    return obj.indexOf(el);
 }
 
-function lastIndex(obj, arr, idx) {
-    return arr.length - 1;
+function lastValue(obj, el, alias) {
+    if (Array.isArray(obj)) {
+        return obj[obj.length - 1];
+    } else {
+        return obj[Object.keys(obj).length -1];
+    }
 }
 
-function currentProperty(obj, arr, idx) {
+function lastIndex(obj, el, alias) {
+    return obj.length - 1;
+}
+
+function currentProperty(obj, el, alias) {
     return Object.keys(obj)[0];
 }
 
-function currentValueAtPath(obj, path, arr, idx) {
+function currentValueAtPath(obj, el, path, alias) {
+    let curr = calculateAlias(obj, el, alias);
     if (path === '$') {
-        return obj;
+        return curr;
     } else if (typeof obj === 'string') {
         return obj;
     }
-    return valueof(obj, path);
+    return valueof(curr, path);
 }
 
-function lastValueAtPath(obj, path, arr, idx) {
+function lastValueAtPath(obj, el, path, alias) {
+    el = obj[obj.length - 1];
     if (path === '$') {
-        return arr[arr.length - 1];
+        return el;
     }
-    return valueof(arr[arr.length - 1], path);
+    return valueof(el, path);
+}
+
+function removeIfNotLoop(args) {
+    if (!args[0] ||
+        (args[0] && 
+         typeof args[0] === 'object' && 
+         Array.isArray(args[0][Object.keys(args[0])[Object.keys(args[0]).length - 1]]))) {
+        args.splice(0, 1);
+    }
 }
 
 function execute(functionName, args, input) {
     let result = null;
-
+    
     let output = null;
     if (Object.keys(tokenRelatedFunctions).includes(functionName)) {
+        removeIfNotLoop(args);
         output = tokenRelatedFunctions[functionName](input, ...args);
     } else if (Object.keys(autonomousFunctions).includes(functionName)) {
+        args.splice(0, 1);
         output = autonomousFunctions[functionName](...args);
     } else if (Object.keys(conditionalFunctions).includes(functionName)) {
         output = conditionalFunctions[functionName](...args);
     } else if (Object.keys(decimalPlacesFunctions).includes(functionName)) {
         output = decimalPlacesFunctions[functionName](...args);
     } else if (Object.keys(bulkFunctions).includes(functionName)) {
+        removeIfNotLoop(args);
         output = bulkFunctions[functionName](input, ...args);
     } else if (Object.keys(arrayFunctions).includes(functionName)) {
+        removeIfNotLoop(args);
         output = arrayFunctions[functionName](args);
     } else if (Object.keys(arrayAndElementFunctions).includes(functionName)) {
         output = arrayAndElementFunctions[functionName](input, ...args);
@@ -459,7 +516,7 @@ function execute(functionName, args, input) {
     }
 
     if (functionName === 'loop') {
-        result = { isProperty: false, isLoop: true, value: output };
+        result = { isProperty: false, isLoop: true, alias: args[2] ? args[2] : typeof args[1] === 'string' ? args[1] : undefined, value: output };
     } else if (functionName === 'eval') {
         result = { isProperty: true, isLoop: false, value: output }
     } else {
