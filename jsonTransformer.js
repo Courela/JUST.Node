@@ -53,6 +53,10 @@ class JsonTransformer extends Transformer {
                             result = fnResult;
                         } else if (fnResult === null) {
                             return null;
+                        } else if (fnResult.isProperty) {
+                            result[fnResult.value] = typeof token === 'string' ? 
+                                this.parseFunction(token, inputJson, currentElementArray) :
+                                this.recursiveEvaluate(token, inputJson, currentElementArray);
                         } else {
                             result = typeof fnResult === 'string' ? fnResult : Object.assign(result, fnResult);
                         }

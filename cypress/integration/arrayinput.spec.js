@@ -1,8 +1,6 @@
 import JsonTransformer from "../../jsonTransformer.js";
 
 context('Array Input', () => {
-    const escapeChar = "/";
-
     beforeEach(() => {
     });
   
