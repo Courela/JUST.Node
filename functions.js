@@ -383,7 +383,7 @@ function findBulkObject(obj, path) {
     return { navigatedObj, key };
 }
 
-let arrayFunctions = {
+let concatenationFunctions = {
     "xconcat": xConcat,
     "xadd": xAdd
 };
@@ -492,9 +492,9 @@ function execute(functionName, args, input) {
     } else if (Object.keys(bulkFunctions).includes(functionName)) {
         removeIfNotLoop(args);
         output = bulkFunctions[functionName](input, ...args);
-    } else if (Object.keys(arrayFunctions).includes(functionName)) {
+    } else if (Object.keys(concatenationFunctions).includes(functionName)) {
         args.splice(0, 1);
-        output = arrayFunctions[functionName](args);
+        output = concatenationFunctions[functionName](args);
     } else if (Object.keys(arrayAndElementFunctions).includes(functionName)) {
         output = arrayAndElementFunctions[functionName](input, ...args);
     } else {
