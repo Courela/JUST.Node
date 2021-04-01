@@ -34,13 +34,27 @@ function valueof(obj, path) {
     return result;
 }
 
-function exists(obj, path) {
-    return valueof(obj, path).length > 0;
+function exists(obj, el, path) {
+    if (!path) {
+        path = el;
+    } else {
+        obj = calculateAlias(obj, el);
+    }
+
+    let result = valueof(obj, path);
+    return (!!result && (typeof result === 'string' || (Array.isArray(result) && result.length > 0))) ||
+        (!result && (result === null || typeof result === 'string'));
 }
 
-function existsAndNotEmpty() {
+function existsAndNotEmpty(obj, el, path) {
+    if (!path) {
+        path = el;
+    } else {
+        obj = calculateAlias(obj, el);
+    }
+
     let result = valueof(obj, path);
-    return result.length > 0 && result[0];
+    return !!result && (typeof result === 'string' || Array.isArray(result)) && result.length > 0;
 }
 
 function concatAllAtPath(obj, arr, path) {
