@@ -330,71 +330,57 @@ let bulkFunctions = {
     "delete": deleteFn
 };
 
-function copy(obj, str, path, alias) {
+function copy(obj, str, path) {
     let result = null;
     if (typeof str === 'string') {
         result = valueof(obj, str);
     } else {
-        result = valueof(calculateAlias(obj, str, alias), path);
+        result = valueof(calculateAlias(obj, str), path);
     }
-    return result && result.length === 1 ? result[0] : result;
+    return { replaceElement: false, result: result && result.length === 1 ? result[0] : result };
 }
 
 function replace(obj, str, path, newObj) {
     if (!newObj) {
         newObj = path;
         path = str;
-    } else {
-        obj = calculateAlias(obj, str);
-    }
+    } 
 
-    let objToBeReplaced = obj;
+    let { navigatedObj, key } = findBulkObject(obj, path);
 
-    let keyToBeReplaced = null;
-    let paths = jsonpath.paths(obj, path);
-
-    paths.forEach(el => {
-        el.forEach((e, i) => {
-            if (e !== '$') {
-                if (i + 1 === el.length) {
-                    keyToBeReplaced = e;
-                } else { 
-                    objToBeReplaced = objToBeReplaced[e];
-                }
-            }
-        });
-    });
-
-    objToBeReplaced[keyToBeReplaced] = newObj;
-    return obj;
+    navigatedObj[key] = newObj;
+    return { replaceElement: true, result: obj };
 }
 
 function deleteFn(obj, str, path) {
     if (typeof str === 'string') {
         path = str;
-    } else {
-        obj = calculateAlias(obj, str);
     }
 
-    let objToBeDeleted = obj;
+    let { navigatedObj, key } = findBulkObject(obj, path);
 
-    let keyToBeDeleted = null;
+    delete navigatedObj[key];
+    return { replaceElement: true, result: obj };
+}
+
+function findBulkObject(obj, path) {
+    let navigatedObj = obj;
+
+    let key = null;
     let paths = jsonpath.paths(obj, path);
 
     paths.forEach(el => {
         el.forEach((e, i) => {
             if (e !== '$') {
                 if (i + 1 === el.length) {
-                    keyToBeDeleted = e;
-                } else { 
-                    objToBeDeleted = objToBeDeleted[e];
+                    key = e;
+                } else {
+                    navigatedObj = navigatedObj[e];
                 }
             }
         });
     });
-
-    delete objToBeDeleted[keyToBeDeleted];
-    return obj;
+    return { navigatedObj, key };
 }
 
 let arrayFunctions = {

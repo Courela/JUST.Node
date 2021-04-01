@@ -72,10 +72,24 @@ class JsonTransformer extends Transformer {
     }
 
     parseArray(arr, inputJson, currentArrayElement) {
-        let result = {};
+        let result = null;
         arr.forEach(el => {
+            if (currentArrayElement) {
+                if (result) {
+                    inputJson = result; //currentArrayElement[Object.keys(currentArrayElement)[Object.keys(currentArrayElement).length - 1]];
+                }
+            }
+            if (!result) {
+                result = {};
+            }
+
             let r = this.parseFunction(el, inputJson, currentArrayElement);
-            result = Object.assign(result, r);
+            if (r && r.replaceElement) {
+                result = Object.assign(result, r.result);
+            }
+            else {
+                result = Object.assign(result, !r || typeof r.result === 'undefined' ? r : r.result);
+            }
         });
         return result;
     }
