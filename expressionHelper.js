@@ -62,16 +62,16 @@ function splitArguments(args) {
 
 function unescape(str) {
     return !isFunction(str) ?
-        str.replace(/\/([\/(),])/, "$1").trim() :
+        str.replace(/\/([\/(),])/g, "$1").trim() :
         str.trim();
 }
 
 function isFunction(val) {
-    return /^\\s*#/.test(val);
+    return /^\s*#/.test(val);
 }
 
 function unescapeSharp(val) {
-    return val.replace("^(\\s*)\\/(#)", "$1$2");
+    return val.replace(/^(\s*)\/(#)/g, "$1$2");
 }
 
 export default {

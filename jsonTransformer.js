@@ -68,7 +68,7 @@ class JsonTransformer extends Transformer {
                 }
             }
         }
-        return result;
+        return typeof result === 'string' ? expressionHelper.unescapeSharp(result) : result;
     }
 
     parseArray(arr, inputJson, currentArrayElement) {
@@ -76,7 +76,7 @@ class JsonTransformer extends Transformer {
         arr.forEach(el => {
             if (currentArrayElement) {
                 if (result) {
-                    inputJson = result; //currentArrayElement[Object.keys(currentArrayElement)[Object.keys(currentArrayElement).length - 1]];
+                    inputJson = result;
                 }
             }
             if (!result) {
@@ -190,7 +190,9 @@ class JsonTransformer extends Transformer {
                 result = functions.execute(functionName, args, inputJson);
             }
         }
-        return result.isProperty || result.isLoop || typeof result == 'string' ? result : result.value;
+        return result.isProperty || result.isLoop ? result : 
+            typeof result === 'string' ? expressionHelper.unescapeSharp(result) : 
+            result.value;
     }
 
     parseArgument(argument, inputJson, currentArrayElement) {
