@@ -21,7 +21,7 @@ let tokenRelatedFunctions = {
 
 function valueof(obj, path) {
     let result = null;
-    if (/\[[^\d].+\]/.test(path)) {
+    if (/\[[^\d].+\]$/.test(path)) {
         result = jsonpath.query(obj, path);
     } else {
         let output = jsonpath.query(obj, path);
