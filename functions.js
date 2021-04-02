@@ -222,7 +222,7 @@ function ifCondition(condition, val, trueResult, falseResult) {
 }
 
 function concat(str1, str2) {
-    return str1.concat(str2);
+    return str1 && str2 ? str1.concat(str2) : str1 ? str1 : str2;
 }
 
 function substring(str, start, len) {
@@ -394,8 +394,8 @@ let concatenationFunctions = {
 };
 
 function xConcat(args) {
-    let result = '';
-    args.forEach(el => result += el);
+    let result = null;
+    args.forEach(el => result = concat(result, el));
     return result;
 }
 
@@ -500,7 +500,7 @@ function execute(functionName, args, input) {
     } else if (Object.keys(bulkFunctions).includes(functionName)) {
         output = bulkFunctions[functionName](input, ...args);
     } else if (Object.keys(concatenationFunctions).includes(functionName)) {
-        if (typeof args[args.length - 1] === 'object') {
+        if (typeof args[args.length - 1] === 'object' && !Array.isArray(args[args.length - 1])) {
             args.pop();
         }
         output = concatenationFunctions[functionName](args);
