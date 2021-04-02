@@ -399,9 +399,10 @@ function xConcat(args) {
     return result;
 }
 
-function xAdd() {
-    //TODO
-    throw 'Not implemented';
+function xAdd(args) {
+    let result = 0;
+    args.forEach(el => result = add(result, el));
+    return result;
 }
 
 let arrayAndElementFunctions = {
