@@ -1,6 +1,6 @@
 import JsonTransformer from "../../jsonTransformer.js";
 
-context('Argumennts Escape', () => {
+context('Arguments Escape', () => {
     const escapeChar = "/";
 
     beforeEach(() => {

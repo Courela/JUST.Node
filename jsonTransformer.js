@@ -23,7 +23,9 @@ class JsonTransformer extends Transformer {
             throw 'Transformer not an object!';
         }
 
-        return this.recursiveEvaluate(transformerJson, inputJson, null, null, null);
+        let currentArrayElement = {};
+        currentArrayElement.root = inputJson;
+        return this.recursiveEvaluate(transformerJson, inputJson, currentArrayElement);
     }
 
     recursiveEvaluate(parentToken, inputJson, currentElementArray) {
@@ -44,7 +46,7 @@ class JsonTransformer extends Transformer {
                         let fnResult = this.parseKeyFunction(key, token, inputJson, currentElementArray);
                         this.handleEvaluationMode(fnResult);
 
-                        if (currentElementArray) {
+                        if (Object.keys(currentElementArray).length > 1) {
                             result = Object.assign({}, result);
                         }
                         delete result[key];
@@ -78,7 +80,7 @@ class JsonTransformer extends Transformer {
     parseArray(arr, inputJson, currentArrayElement) {
         let result = null;
         arr.forEach(el => {
-            if (currentArrayElement) {
+            if (Object.keys(currentArrayElement).length > 1) {
                 if (result) {
                     inputJson = result;
                 }
@@ -136,10 +138,6 @@ class JsonTransformer extends Transformer {
         if (!elements) {
             return null;
         }
-
-        if (!currentElementArray) {
-            currentElementArray = {};
-        }
         
         let result = isPropertyLoop ? {} : [];
         if (!Array.isArray(elements) && !Object.keys(elements).length > 0) {
@@ -190,7 +188,9 @@ class JsonTransformer extends Transformer {
                 args.forEach((el, i) => {
                     args[i] = this.recursiveEvaluate(el, inputJson, currentElementArray);
                 });
-                args.splice(0, 0, currentElementArray)
+                if (Object.keys(currentElementArray).length > 1) {
+                    args.push(currentElementArray)
+                }
                 result = functions.execute(functionName, args, inputJson);
             }
         }
