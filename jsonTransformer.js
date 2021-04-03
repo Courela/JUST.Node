@@ -191,7 +191,7 @@ class JsonTransformer extends Transformer {
                 if (Object.keys(currentElementArray).length > 1) {
                     args.push(currentElementArray)
                 }
-                result = functions.execute(functionName, args, inputJson);
+                result = functions.execute(functionName, args, inputJson, this.customFunctions);
             }
         }
         return result.isProperty || result.isLoop ? result : 

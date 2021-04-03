@@ -484,7 +484,7 @@ function lastValueAtPath(obj, path, alias, el) {
     return valueof(el, path);
 }
 
-function execute(functionName, args, input) {
+function execute(functionName, args, input, customFunctions) {
     let result = null;
     
     let output = null;
@@ -505,6 +505,8 @@ function execute(functionName, args, input) {
         output = concatenationFunctions[functionName](args);
     } else if (Object.keys(arrayAndElementFunctions).includes(functionName)) {
         output = arrayAndElementFunctions[functionName](input, ...args);
+    } else if (customFunctions && Object.keys(customFunctions).includes(functionName)) {
+        output = customFunctions[functionName](input, ...args);
     } else {
         throw 'Invalid function: ' + functionName;
     }

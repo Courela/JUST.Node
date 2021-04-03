@@ -4,6 +4,12 @@ class Transformer {
             (context.evaluationMode ? context : Object.assign(context, { evaluationMode: 'fallbackToDefault'})) : 
             { evaluationMode: 'fallbackToDefault'};
         this._loopCounter = 0;
+
+        this.customFunctions = {};
+    }
+
+    registerCustomFunction(alias, fn) {
+        this.customFunctions[alias] = fn;
     }
 
     // transform(transformerJson, inputJson) {
