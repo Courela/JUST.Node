@@ -168,9 +168,8 @@ function min(obj, pathOrArray) {
     return result;
 }
 
-function length() {
-    //TODO
-    throw 'Not implemented';
+function length(obj, s) {
+    return s.length;
 }
 
 function loop(obj, path, alias, loopOverAlias, el) {
