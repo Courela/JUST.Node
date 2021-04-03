@@ -1,4 +1,4 @@
-import JsonTransformer from "../../jsonTransformer.js";
+import JsonTransformer from "../../../jsonTransformer.js";
 
 context('Aggregate Functions', () => {
     beforeEach(() => {
