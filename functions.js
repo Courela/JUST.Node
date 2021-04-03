@@ -324,9 +324,8 @@ let decimalPlacesFunctions = {
     "todecimal": toDecimal
 };
 
-function toDecimal() {
-    //TODO
-    throw 'Not implemented';
+function toDecimal(v) {
+    return parseFloat(v);
 }
 
 let conditionalFunctions = {

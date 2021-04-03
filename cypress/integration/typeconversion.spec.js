@@ -183,4 +183,40 @@ context('Type Conversion', () => {
 
         expect(result).to.deep.equal({ result: 0 });
     });
+
+    it('to decimal string', () => {
+        const input = '{ "value": "0" }';
+        const transformer = '{ "result": "#todecimal(#valueof($.value))" }';
+
+        var result = new JsonTransformer(null).transform(transformer, input);
+
+        expect(result).to.deep.equal({ result: 0.0 });
+    });
+
+    it('to decimal string', () => {
+        const input = '{ "value": "1.01" }';
+        const transformer = '{ "result": "#todecimal(#valueof($.value))" }';
+
+        var result = new JsonTransformer(null).transform(transformer, input);
+
+        expect(result).to.deep.equal({ result: 1.01 });
+    });
+
+    it('to decimal integer', () => {
+        const input = '{ "value": 123 }';
+        const transformer = '{ "result": "#todecimal(#valueof($.value))" }';
+
+        var result = new JsonTransformer(null).transform(transformer, input);
+
+        expect(result).to.deep.equal({ result: 123.0 });
+    });
+
+    it('to decimal negative integer', () => {
+        const input = '{ "value": -123 }';
+        const transformer = '{ "result": "#todecimal(#valueof($.value))" }';
+
+        var result = new JsonTransformer(null).transform(transformer, input);
+
+        expect(result).to.deep.equal({ result: -123.0 });
+    });
 });
