@@ -44,7 +44,9 @@ class JsonTransformer extends Transformer {
                     const token = result[key];
                     if (key && key.trim().startsWith('#')) {
                         let fnResult = this.parseKeyFunction(key, token, inputJson, currentElementArray);
-                        this.handleEvaluationMode(fnResult);
+                        if (typeof fnResult.value !== 'undefined' && typeof fnResult.value.msg !== 'undefined') {
+                            throw fnResult.value.msg;
+                        }
 
                         if (Object.keys(currentElementArray).length > 1) {
                             result = Object.assign({}, result);
@@ -63,17 +65,23 @@ class JsonTransformer extends Transformer {
                             result = typeof fnResult === 'string' ? fnResult : Object.assign(result, fnResult);
                         }
                     } else if (token) {
+                        let output = null;
                         if (Array.isArray(token) && result !== "#" ) {
-                            result[key] = this.parseArray(token, inputJson, currentElementArray);
+                            output = this.parseArray(token, inputJson, currentElementArray);
                         } else if (typeof token === 'string') {
-                            result[key] = this.parseFunction(token, inputJson, currentElementArray);
+                            output = this.parseFunction(token, inputJson, currentElementArray);
                         } else {
-                            result[key] = this.recursiveEvaluate(token, inputJson, currentElementArray);
+                            output = this.recursiveEvaluate(token, inputJson, currentElementArray);
                         }
+
+                        output = this.handleEvaluationMode(output);
+                        result[key] = output;
                     }
                 }
             }
+            
         }
+        result = this.handleEvaluationMode(result);
         return typeof result === 'string' ? expressionHelper.unescapeSharp(result) : result;
     }
 
@@ -85,16 +93,33 @@ class JsonTransformer extends Transformer {
                     inputJson = result;
                 }
             }
-            if (!result) {
-                result = {};
-            }
 
-            let r = this.parseFunction(el, inputJson, currentArrayElement);
+            //let r = this.parseFunction(el, inputJson, currentArrayElement);
+            let r = this.recursiveEvaluate(el, inputJson, currentArrayElement);
             if (r && r.replaceElement) {
+                if (!result) {
+                    result = {};
+                }
                 result = Object.assign(result, r.result);
             }
             else {
-                result = Object.assign(result, !r || typeof r.result === 'undefined' ? r : r.result);
+                if (Array.isArray(r)) {
+                    this.handleEvaluationMode(r);
+                    if (result === null) {
+                        result = r;
+                    }
+                    else if (Array.isArray(result)) {
+                        r.forEach(item => result.push(item));
+                    } else {
+                        r.forEach(item => Object.assign(result, item));
+                    }
+                }
+                else {
+                    if (!result) {
+                        result = {};
+                    }
+                    result = Object.assign(result, !r || typeof r.result === 'undefined' ? r : r.result);
+                }
             }
         });
         return result;
@@ -194,7 +219,8 @@ class JsonTransformer extends Transformer {
                 result = functions.execute(functionName, args, inputJson, this.customFunctions);
             }
         }
-        return result.isProperty || result.isLoop ? result : 
+        return result.isProperty || result.isLoop ? 
+            result : 
             typeof result === 'string' ? expressionHelper.unescapeSharp(result) : 
             result.value;
     }

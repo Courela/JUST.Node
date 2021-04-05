@@ -49,13 +49,14 @@ function existsAndNotEmpty(obj, path, el) {
 
 function concatAllAtPath(obj, arr, path) {
     let result = '';
-    if (arr && arr.length > 0) {
-        arr.forEach(el => {
-            result +=  valueof(el, path);            
-        });
-        if (!result || typeof result !== 'string') {
-            throw 'Invalid value in array to concatenate: ' + result.toString();
+    try {
+        if (arr && arr.length > 0) {
+            arr.forEach(el => {
+                result = concat(result, valueof(el, path)); //valueof(el, path);
+            });
         }
+    } catch (ex) {
+        result = { default: null, msg: 'Invalid value in array to concatenate!' };
     }
     return result;
 }
@@ -63,9 +64,13 @@ function concatAllAtPath(obj, arr, path) {
 function sumAtPath(obj, arr, path) {
     let result = 0;
     if (arr && arr.length > 0) {
-        arr.forEach(el => {
-            result += Number(valueof(el, path));
-        });
+        try {
+            arr.forEach(el => {
+                result += Number(valueof(el, path));
+            });
+        } catch (ex) {
+            return { default: result, msg: ex };
+        }
     }
     return result;
 }
@@ -73,9 +78,13 @@ function sumAtPath(obj, arr, path) {
 function averageAtPath(obj, arr, path) {
     let result = 0;
     if (arr && arr.length > 0) {
-        arr.forEach(el => {
-            result += Number(valueof(el, path));
-        });
+        try {
+            arr.forEach(el => {
+                result += Number(valueof(el, path));
+            });
+        } catch (ex) {
+            return { default: result, msg: ex };
+        }
     }
     return result / arr.length;
 }
@@ -83,13 +92,17 @@ function averageAtPath(obj, arr, path) {
 function maxAtPath(obj, arr, path) {
     let result = null;
     if (arr && arr.length > 0) {
-        arr.forEach(el => {
-            if (result === null) {
-                result = Number(valueof(el, path));
-            } else {
-                result = Math.max(Number(valueof(el, path)), result);
-            }
-        });
+        try {
+            arr.forEach(el => {
+                if (result === null) {
+                    result = Number(valueof(el, path));
+                } else {
+                    result = Math.max(Number(valueof(el, path)), result);
+                }
+            });
+        } catch (ex) {
+            return { default: result, msg: ex }; 
+        }
     }
     return result;
 }
@@ -97,79 +110,114 @@ function maxAtPath(obj, arr, path) {
 function minAtPath(obj, arr, path) {
     let result = null;
     if (arr && arr.length > 0) {
-        arr.forEach(el => {
-            if (result === null) {
-                result = Number(valueof(el, path));
-            } else {
-                result = Math.min(Number(valueof(el, path)), result);
-            }
-        });
+        try {
+            arr.forEach(el => {
+                if (result === null) {
+                    result = Number(valueof(el, path));
+                } else {
+                    result = Math.min(Number(valueof(el, path)), result);
+                }
+            });
+        } catch (ex) {
+            return { default: null, msg: ex }; 
+        }
     }
     return result;
 }
 
 function groupArrayBy(arr, groupingElement, groupedElement, path) {
     let result = [];
-    if (!groupingElement.contains(":")) {
-        //TODO
-        result = Utilities.GroupArray(path, arr, groupingElement, groupedElement);
-    } else {
-        //TODO
-        let groupingElements = groupingElement.split(':');
-        result = Utilities.GroupArrayMultipleProperties(path, arr, groupingElements, groupedElement);
+    try {
+        if (!groupingElement.contains(":")) {
+            //TODO
+            result = Utilities.GroupArray(path, arr, groupingElement, groupedElement);
+        } else {
+            //TODO
+            let groupingElements = groupingElement.split(':');
+            result = Utilities.GroupArrayMultipleProperties(path, arr, groupingElements, groupedElement);
+        }
+    } catch (ex ){
+        return { default: [], msg: ex }; 
     }
     return result;
 }
 
 function concatAll(obj, pathOrArray) {
     let result = '';
-    if (pathOrArray && typeof pathOrArray === 'string') {
-        pathOrArray = valueof(obj, pathOrArray);
+    try {
+        if (pathOrArray && typeof pathOrArray === 'string') {
+            pathOrArray = valueof(obj, pathOrArray);
+        }
+        pathOrArray.forEach(el => {
+            if (typeof el !== 'string' && !Array.isArray(el)) {
+                throw 'Invalid value to concatenate!';
+            }
+            result += el;
+        });
+    } catch (ex) {
+        return { default: '', msg: ex }; 
     }
-    pathOrArray.forEach(el => {
-        result += el;
-    });
     return result;
 }
 
 function sum(obj, pathOrArray) {
     let result = 0;
-    if (pathOrArray && typeof pathOrArray === 'string') {
-        pathOrArray = valueof(obj, pathOrArray);
+    try {
+        if (pathOrArray && typeof pathOrArray === 'string') {
+            pathOrArray = valueof(obj, pathOrArray);
+        }
+        pathOrArray.forEach(el => result += el);
+    } catch (ex) {
+        return { default: result, msg: ex }; 
     }
-    pathOrArray.forEach(el => result += el);
     return result;
 }
 
 function average(obj, pathOrArray) {
     let result = 0;
-    if (pathOrArray && typeof pathOrArray === 'string') {
-        pathOrArray = valueof(obj, pathOrArray);
+    try {
+        if (pathOrArray && typeof pathOrArray === 'string') {
+            pathOrArray = valueof(obj, pathOrArray);
+        }
+        pathOrArray.forEach(el => result += el);
+    } catch (ex) {
+        return { default: result, msg: ex }; 
     }
-    pathOrArray.forEach(el => result += el);
     return result / pathOrArray.length;
 }
 
 function max(obj, pathOrArray) {
     let result = null;
-    if (pathOrArray && typeof pathOrArray === 'string') {
-        pathOrArray = valueof(obj, pathOrArray);
+    try {
+        if (pathOrArray && typeof pathOrArray === 'string') {
+            pathOrArray = valueof(obj, pathOrArray);
+        }
+        result = Math.max(...pathOrArray);
+    } catch (ex) {
+        return { default: result, msg: ex }; 
     }
-    result = Math.max(...pathOrArray);
     return result;
 }
 
 function min(obj, pathOrArray) {
     let result = null;
-    if (pathOrArray && typeof pathOrArray === 'string') {
-        pathOrArray = valueof(obj, pathOrArray);
+    try {
+        if (pathOrArray && typeof pathOrArray === 'string') {
+            pathOrArray = valueof(obj, pathOrArray);
+        }
+        result = Math.min(...pathOrArray);
+    } catch (ex) {
+        return { default: result, msg: ex }; 
     }
-    result = Math.min(...pathOrArray);
     return result;
 }
 
 function length(obj, s) {
-    return s.length;
+    try {
+        return s.length;
+    } catch (ex) {
+        return { default: 0, msg: ex }; 
+    }
 }
 
 function loop(obj, path, alias, loopOverAlias, el) {
@@ -221,7 +269,33 @@ function ifCondition(condition, val, trueResult, falseResult) {
 }
 
 function concat(str1, str2) {
-    return str1 && str2 ? str1.concat(str2) : str1 ? str1 : str2;
+    let result = '';
+    if (typeof str1 === 'string') { 
+        if (typeof str2 === 'string') { 
+            result = str1.concat(str2);
+        } else if (str2 === null) {
+            result = str1;
+        } else {
+            result = { default: '', msg: 'Invalid value to concatenate!' };
+        }
+    } else if (str1 === null && typeof str2 === 'string') {
+        result = str2;
+    } else if (Array.isArray(str1)) {
+        if (Array.isArray(str2)) {
+            result = str1.concat(str2);
+        } else if (str2 === null) {
+            result = str1;
+        } else {
+            result = { default: [], msg: 'Invalid value to concatenate!' }
+        }
+    } else if (str1 === null && Array.isArray(str2)) {
+        result = str2;
+    } else if (str1 === null && str2 === null) {
+        result = null;
+    }else {
+        result = { default: null, msg: 'Invalid value to concatenate!' }
+    }
+    return result;
 }
 
 function substring(str, start, len) {
@@ -289,11 +363,15 @@ function mathLessThanOrEqualTo(n1, n2) {
 }
 
 function toInteger(val) {
-    let result = null;
-    if (val && val === 'true') {
-        result = 1;
-    } else if (val && val === 'false') {
-        result = 0;
+    let result = 0;
+    try {
+        if (val && val === 'true') {
+            result = 1;
+        } else if (val && val === 'false') {
+            result = 0;
+        }
+    } catch (ex) {
+        return { default: result, msg: ex }; 
     }
     return round(Number(result ?? val), 0);
 }
@@ -308,6 +386,8 @@ function toBoolean(val) {
         result = val === 'true';
     } else if (val && typeof val === 'number') {
         result = val !== 0;
+    } else {
+        return { default: result, msg: 'String was not recognized as a valid Boolean' };
     }
     return result;
 }
