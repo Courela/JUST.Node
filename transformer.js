@@ -15,14 +15,14 @@ class Transformer {
     // transform(transformerJson, inputJson) {
     // }
 
-    handleEvaluationMode(result) {
+    handleEvaluationMode(result, previousResult) {
         if (this.context) {
             if (Array.isArray(this.context.evaluationMode)) {
                 this.context.evaluationMode.forEach(el => {
-                     result = this.parseEvaluationMode(el, result);      
+                     result = this.parseEvaluationMode(el, result, previousResult);      
                 });
             } else if (typeof this.context.evaluationMode === 'string') {
-                result = this.parseEvaluationMode(this.context.evaluationMode, result);
+                result = this.parseEvaluationMode(this.context.evaluationMode, result, previousResult);
             }
         }
         return result;
@@ -53,27 +53,28 @@ class Transformer {
         return result;
     }
 
-    joinArrays(result) {
-        let output = [];
+    joinArrays(result, previousResult) {
+        // let output = [];
+        if (typeof previousResult === 'undefined') {
+            return result;
+        }
+
         if (Array.isArray(result)) {
             result.forEach(el => {
-                if (Array.isArray(el)) {
-                    output = output.concat(el);
-                } else {
-                    return result;
-                }
+                previousResult.push(el);
             });
-        } else if (typeof result === 'object') {
-            let keys = Object.keys(result);
-            keys.forEach(el => {
-                if (Array.isArray(result[el])) {
-                    output = output.push(result);
-                } else {
-                    return result;
-                }
-            });
+        // } else if (typeof result === 'object') {
+        //     let keys = Object.keys(result);
+        //     keys.forEach(el => {
+        //         if (Array.isArray(result[el])) {
+        //             output = output.push(result);
+        //         } else {
+        //             return result;
+        //         }
+        //     });
         }
-        return output.length > 0 ? output : result;
+        return previousResult; 
+        //output.length > 0 ? output : result;
     }
 }
 

@@ -1,7 +1,8 @@
 import JsonTransformer  from './jsonTransformer.js';
-const input = '{ "numbers": [ 1, 2, 3, 4, 5 ]}';
-const transformer = '{ "iteration": { "#loop($.numbers)": { "current_value": \"#currentvalue()" } } }';
-let t = new JsonTransformer({ evaluationMode: [ 'strict' ]});
+const escapeChar = "/";
+const input = '[{ "id": 1, "cnt": 100, "rowNum": 1, "col": 1 },{ "id": 2, "cnt": 89, "rowNum": 1, "col": 1 }]';
+        const transformer = '[{ "a": "#valueof($)" }, { "#loop($)": { "key": "#currentvalueatpath($.id)", "quantity": "#currentvalueatpath($.cnt)" } }]';
+let t = new JsonTransformer({ evaluationMode: ['strict','joinArrays'] });
 let result = t.transform(transformer, input);
 console.log(result);
 
