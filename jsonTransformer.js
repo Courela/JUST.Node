@@ -26,15 +26,19 @@ class JsonTransformer extends Transformer {
         let currentArrayElement = {};
         currentArrayElement.root = inputJson;
         if (Array.isArray(transformerJson)) {
-            let result = [];
-            transformerJson.forEach(item => {
-                let output = this.recursiveEvaluate(item, inputJson, currentArrayElement);
-                result = this.handleEvaluationMode(output, result);
-            });
-            return result;
+            return this.transformArray(transformerJson, inputJson, currentArrayElement);
         } else {
             return this.recursiveEvaluate(transformerJson, inputJson, currentArrayElement);
         }
+    }
+
+    transformArray(transformerJson, inputJson, currentArrayElement) {
+        let result = [];
+        transformerJson.forEach(item => {
+            let output = this.recursiveEvaluate(item, inputJson, currentArrayElement);
+            result = this.handleEvaluationMode(output, result);
+        });
+        return result;
     }
 
     recursiveEvaluate(parentToken, inputJson, currentElementArray) {

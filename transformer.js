@@ -21,20 +21,28 @@ class Transformer {
                 this.context.evaluationMode.forEach(el => {
                      result = this.parseEvaluationMode(el, result, previousResult);      
                 });
+                if (previousResult && !this.context.evaluationMode.includes('joinArrays')) {
+                    previousResult.push(result);
+                    result = previousResult;
+                }
             } else if (typeof this.context.evaluationMode === 'string') {
                 result = this.parseEvaluationMode(this.context.evaluationMode, result, previousResult);
+                if (previousResult && !this.context.evaluationMode !== 'joinArrays') {
+                    previousResult.push(result);
+                    result = previousResult;
+                }
             }
         }
         return result;
     }
 
-    parseEvaluationMode(evaluationMode, result) {
+    parseEvaluationMode(evaluationMode, result, previousResult) {
         if (evaluationMode === 'fallbackToDefault') {
             result = this.fallbackToDefault(result);
         } else if (evaluationMode === 'strict') {
             result = this.strictMode(result);
         } else if (evaluationMode === 'joinArrays') {
-            result = this.joinArrays(result);
+            result = this.joinArrays(result, previousResult);
         }
         return result;
     }
@@ -63,18 +71,10 @@ class Transformer {
             result.forEach(el => {
                 previousResult.push(el);
             });
-        // } else if (typeof result === 'object') {
-        //     let keys = Object.keys(result);
-        //     keys.forEach(el => {
-        //         if (Array.isArray(result[el])) {
-        //             output = output.push(result);
-        //         } else {
-        //             return result;
-        //         }
-        //     });
+        } else {
+            previousResult.push(result);
         }
         return previousResult; 
-        //output.length > 0 ? output : result;
     }
 }
 

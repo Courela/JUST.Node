@@ -37,7 +37,7 @@ context('Output', () => {
 
         var result = new JsonTransformer({ evaluationMode: [ 'strict' ]}).transform(transformer, input);
 
-        expect(result).to.deep.equal([{ a: [{ id: 1, cnt: 100, rowNum: 1, col: 1 },{ id: 2, cnt: 89, rowNum: 1, col: 1 }] },{ key: 1, quantity: 100 },{ key: 2, quantity: 89} ]);
+        expect(result).to.deep.equal([{ a: [{ id: 1, cnt: 100, rowNum: 1, col: 1 },{ id: 2, cnt: 89, rowNum: 1, col: 1 }] }, [{ key: 1, quantity: 100 },{ key: 2, quantity: 89}] ]);
     });
 
     it('join arrays', () => {
