@@ -27,5 +27,8 @@
     "start": "node.exe app.js",
     "test": "cypress open"
   },
-  "author": "Courela"
+  "author": "Courela",
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com"
+  }
 }
