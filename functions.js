@@ -302,15 +302,31 @@ function concat(str1, str2) {
 }
 
 function substring(str, start, len) {
-    return str.substr(start, len);
+    try {
+        let result = str.substr(start, len);
+        if (!result) {
+            throw 'Not found!';
+        }
+        return result;
+    } catch (err) {
+        return { default: null, msg: err };
+    }
 }
 
 function firstIndexOf(str, find) {
-    return str.indexOf(find);
+    let result = str.indexOf(find);
+    if (result === -1) {
+        return { default: result, msg: "'" + find + "' not found in '" + str + "'"};
+    }
+    return result;
 }
 
 function lastIndexOf(str, find) {
-    return str.lastIndexOf(find);
+    let result = str.lastIndexOf(find);
+    if (result === -1) {
+        return { default: result, msg: "'" + find + "' not found in '" + str + "'"};
+    }
+    return result;
 }
 
 function add(n1, n2) {
@@ -427,7 +443,9 @@ let bulkFunctions = {
 
 function copy(obj, path, str) {
     let result = null;
-    if (typeof str === 'string') {
+    if (path === null) {
+        throw "Invalid path for #copy: resolved to null!";
+    } else if (typeof str === 'string') {
         result = valueof(obj, str);
     } else {
         result = valueof(calculateAlias(obj, str), path);
