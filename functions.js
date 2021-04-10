@@ -1,7 +1,10 @@
 import jsonpath from 'jsonpath'
 
+let rootRelatedFunctions = {
+    "valueof": valueof
+};
+
 let tokenRelatedFunctions = { 
-    "valueof": valueof, 
     "exists": exists,
     "existsandnotempty": existsAndNotEmpty,
     "concatallatpath": concatAllAtPath,
@@ -568,7 +571,10 @@ function execute(functionName, args, input, customFunctions) {
     let result = null;
     
     let output = null;
-    if (Object.keys(tokenRelatedFunctions).includes(functionName)) {
+    if (Object.keys(rootRelatedFunctions).includes(functionName)) {
+        input = args && args[1] ? args[1].root ? args[1].root : args[1] : input;
+        output = rootRelatedFunctions[functionName](input, ...args);
+    } else if (Object.keys(tokenRelatedFunctions).includes(functionName)) {
         output = tokenRelatedFunctions[functionName](input, ...args);
     } else if (Object.keys(autonomousFunctions).includes(functionName)) {
         output = autonomousFunctions[functionName](...args);

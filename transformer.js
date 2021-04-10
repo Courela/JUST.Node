@@ -12,9 +12,6 @@ class Transformer {
         this.customFunctions[alias] = fn;
     }
 
-    // transform(transformerJson, inputJson) {
-    // }
-
     handleEvaluationMode(result, previousResult) {
         if (this.context) {
             if (Array.isArray(this.context.evaluationMode)) {
