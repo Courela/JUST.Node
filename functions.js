@@ -366,7 +366,7 @@ function mathLessThanOrEqualTo(n1, n2) {
 }
 
 function toInteger(val) {
-    let result = 0;
+    let result = null;
     try {
         if (val && val === 'true') {
             result = 1;
@@ -376,7 +376,7 @@ function toInteger(val) {
     } catch (ex) {
         return { default: result, msg: ex }; 
     }
-    return round(Number(result ?? val), 0);
+    return round(Number(result !== null ? result : val), 0);
 }
 
 function toStringJust(val) {
