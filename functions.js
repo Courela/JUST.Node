@@ -217,7 +217,10 @@ function min(obj, pathOrArray) {
 
 function length(obj, s) {
     try {
-        return s.length;
+        if (typeof s.length !== "undefined") {
+            return s.length;
+        }
+        return { default: 0, msg: 'Value not enumerable: ' + s.toString() };  
     } catch (ex) {
         return { default: 0, msg: ex }; 
     }
