@@ -60,7 +60,7 @@ context('Dynamic Properties', () => {
 
     it('multiple evals', () => {
         const input = '{ "people": [{ "name": "Jim", "number": "0123-4567-8888" }, { "name": "John", "number": "0134523-4567-8910" }]}';
-        const transformer = '{ "root": { "#loop($.people)": { "#eval(#xconcat(name, #add(#currentindex(),1)))": "#currentvalueatpath($.name)", "#eval(#xconcat(number, #add(#currentindex(),1)))": "#currentvalueatpath($.number)" } } }';
+        const transformer = '{ "root": { "#loop($.people)": { "#eval(#xconcat(name, #tostring(#add(#currentindex(),1))))": "#currentvalueatpath($.name)", "#eval(#xconcat(number, #tostring(#add(#currentindex(),1))))": "#currentvalueatpath($.number)" } } }';
 
         var result = new JsonTransformer(null).transform(transformer, input);
 
