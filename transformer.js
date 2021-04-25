@@ -86,7 +86,7 @@ class Transformer {
         if (typeof previousResult === 'undefined') {
             return result;
         }
-        if (typeof result === 'object' && typeof previousResult === 'object') {
+        if (typeof result === 'object' && !Array.isArray(result) && typeof previousResult === 'object') {
             let keysResult = Object.keys(result);
             let keysPrevious = Object.keys(previousResult);
             keysResult.forEach(el => {

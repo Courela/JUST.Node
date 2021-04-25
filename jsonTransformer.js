@@ -170,7 +170,7 @@ class JsonTransformer extends Transformer {
                 }
             }
         });
-        return result;
+        return result ? result : [];
     }
 
     parseKeyFunction(key, token, inputJson, currentElementArray) {
