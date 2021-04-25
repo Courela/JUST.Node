@@ -526,7 +526,7 @@ function calculateIndex(obj, el, alias) {
 }
 
 function calculate(obj, el, alias) {
-    let result = obj;
+    let result = { element: obj, index: null };
     if (el) {
         if (alias && el[alias]) {
             result = el[alias];
