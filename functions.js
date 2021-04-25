@@ -453,21 +453,21 @@ function copy(obj, path, str) {
     } else {
         result = valueof(calculateAlias(obj, str), path);
     }
-    return { replaceElement: false, result: result && result.length === 1 ? result[0] : result };
+    return { replaceElement: false, value: result && result.length === 1 ? result[0] : result };
 }
 
 function replace(obj, path, newObj, str) {
     let { navigatedObj, key } = findBulkObject(obj, path);
 
     navigatedObj[key] = newObj;
-    return { replaceElement: true, result: obj };
+    return { replaceElement: true, value: obj };
 }
 
 function deleteFn(obj, path, str) {
     let { navigatedObj, key } = findBulkObject(obj, path);
 
     delete navigatedObj[key];
-    return { replaceElement: true, result: obj };
+    return { replaceElement: true, value: obj };
 }
 
 function findBulkObject(obj, path) {

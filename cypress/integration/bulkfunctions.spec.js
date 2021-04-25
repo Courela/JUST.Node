@@ -103,7 +103,16 @@ context('Bulk Functions', () => {
         expect(() => new JsonTransformer(null).transform(transformer, input)).to.throw();
     });
 
-    it('copy add property', () => {
+    it('copy add unknown property', () => {
+        const input = '{ "unknown-property": "value", "known-property": { "unknown-sub-property1": "value1", "unknown-sub-property2": "value2\", "unknown-sub-propertyN": "valueN" } }';
+        const transformer = '{ "#": [ "#copy($)" ], "added-property": 1 }';
+
+        var result = new JsonTransformer({ evaluationMode: 'addOrReplaceProperties' }).transform(transformer, input);
+
+        expect(result).to.deep.equal({ "added-property": 1, "unknown-property": "value", "known-property": { "unknown-sub-property1": "value1", "unknown-sub-property2": "value2", "unknown-sub-propertyN": "valueN" } });
+    });
+
+    it('copy add known property', () => {
         const input = '{ "unknown-property": "value", "known-property": { "unknown-sub-property1": "value1", "unknown-sub-property2": "value2\", "unknown-sub-propertyN": "valueN" } }';
         const transformer = '{ "#": [ "#copy($)" ], "known-property": { "additional-sub-property": "value" } }';
 

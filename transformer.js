@@ -18,13 +18,13 @@ class Transformer {
                 this.context.evaluationMode.forEach(el => {
                      result = this.parseEvaluationMode(el, result, previousResult);      
                 });
-                if (previousResult && !this.context.evaluationMode.includes('joinArrays')) {
+                if (Array.isArray(previousResult) && !this.context.evaluationMode.includes('joinArrays')) {
                     previousResult.push(result);
                     result = previousResult;
                 }
             } else if (typeof this.context.evaluationMode === 'string') {
                 result = this.parseEvaluationMode(this.context.evaluationMode, result, previousResult);
-                if (previousResult && !this.context.evaluationMode !== 'joinArrays') {
+                if (Array.isArray(previousResult) && !this.context.evaluationMode !== 'joinArrays') {
                     previousResult.push(result);
                     result = previousResult;
                 }
@@ -69,9 +69,36 @@ class Transformer {
                 previousResult.push(el);
             });
         } else {
-            previousResult.push(result);
+            if (Array.isArray(previousResult)) {
+                previousResult.push(result);
+            }
         }
         return previousResult; 
+    }
+
+    isAddOrReplaceProperties(isToEvaluate) {
+        return isToEvaluate && this.context && this.context.evaluationMode && 
+            ((Array.isArray(this.context.evaluationMode) && this.context.evaluationMode.includes('addOrReplaceProperties')) ||
+             (this.context.evaluationMode === 'addOrReplaceProperties'));
+    }
+
+    addOrReplaceProperties(result, previousResult) {
+        if (typeof previousResult === 'undefined') {
+            return result;
+        }
+        if (typeof result === 'object' && typeof previousResult === 'object') {
+            let keysResult = Object.keys(result);
+            let keysPrevious = Object.keys(previousResult);
+            keysResult.forEach(el => {
+                if (keysPrevious.includes(el)) {
+                    previousResult[el] = this.addOrReplaceProperties(result[el], previousResult[el]);
+                } else {
+                    previousResult[el] = result[el];
+                }
+            });
+            result = previousResult;
+        }
+        return result;
     }
 }
 

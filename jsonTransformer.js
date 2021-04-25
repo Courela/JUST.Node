@@ -41,7 +41,7 @@ class JsonTransformer extends Transformer {
         return result;
     }
 
-    recursiveEvaluate(parentToken, inputJson, currentElementArray) {
+    recursiveEvaluate(parentToken, inputJson, currentElementArray, isBulk) {
         let result = parentToken;
         if (result) {
             if (Array.isArray(result)) {
@@ -56,7 +56,10 @@ class JsonTransformer extends Transformer {
                     const key = keys[i];
                     const token = result[key];
                     if (key && key.trim().startsWith('#')) {
-                        let fnResult = this.parseKeyFunction(key, token, inputJson, currentElementArray);
+                        let output =  this.parseKeyFunction(key, token, inputJson, currentElementArray);
+                        let fnResult = output.value;
+                        isBulk = output.isBulk;
+
                         if (typeof fnResult.value !== 'undefined' && typeof fnResult.value.msg !== 'undefined') {
                             throw fnResult.value.msg;
                         }
@@ -70,12 +73,18 @@ class JsonTransformer extends Transformer {
                             result = fnResult;
                         } else if (fnResult === null) {
                             return null;
-                        } else if (fnResult.isProperty) {
-                            result[fnResult.value] = typeof token === 'string' ? 
+                        } else if (output.isProperty) {
+                            result[fnResult] = typeof token === 'string' ? 
                                 this.parseFunction(token, inputJson, currentElementArray) :
                                 this.recursiveEvaluate(token, inputJson, currentElementArray);
                         } else {
-                            result = typeof fnResult === 'string' ? fnResult : Object.assign(result, fnResult);
+                            //TODO handle bulk functions
+                            //result = typeof fnResult === 'string' ? fnResult : Object.assign(result, fnResult);
+                            result = typeof fnResult === 'string' ? 
+                                fnResult : 
+                                this.isAddOrReplaceProperties(isBulk) ? 
+                                    this.addOrReplaceProperties(result, fnResult) : 
+                                    Object.assign(result, fnResult);
                         }
                     } else if (token) {
                         let output = null;
@@ -88,6 +97,7 @@ class JsonTransformer extends Transformer {
                         }
 
                         output = this.handleEvaluationMode(output);
+                        //output = this.handleEvaluationMode(output, result);
                         result[key] = output;
                     }
                 }
@@ -97,6 +107,32 @@ class JsonTransformer extends Transformer {
         result = this.handleEvaluationMode(result);
         return typeof result === 'string' ? expressionHelper.unescapeSharp(result) : result;
     }
+
+    // evaluateKeyFunction(key, token, inputJson, currentElementArray, isBulk) {
+    //     let result = {};
+    //     let fnResult = this.parseKeyFunction(key, token, inputJson, currentElementArray);
+    //     if (typeof fnResult.value !== 'undefined' && typeof fnResult.value.msg !== 'undefined') {
+    //         throw fnResult.value.msg;
+    //     }
+
+    //     if (Array.isArray(fnResult)) {
+    //         result = fnResult;
+    //     } else if (fnResult === null) {
+    //         return null;
+    //     } else if (fnResult.isProperty) {
+    //         result[fnResult.value] = typeof token === 'string' ? 
+    //             this.parseFunction(token, inputJson, currentElementArray) :
+    //             this.recursiveEvaluate(token, inputJson, currentElementArray);
+    //     } else {
+    //         //TODO handle bulk functions
+    //         //result = typeof fnResult === 'string' ? fnResult : Object.assign(result, fnResult);
+    //         result = typeof fnResult === 'string' ? 
+    //             fnResult : 
+    //             this.isAddOrReplaceProperties(isBulk) ? 
+    //                 this.addOrReplaceProperties(result, fnResult) : 
+    //                 Object.assign(result, fnResult);
+    //     }
+    // }
 
     parseArray(arr, inputJson, currentArrayElement) {
         let result = null;
@@ -108,29 +144,29 @@ class JsonTransformer extends Transformer {
             }
 
             //let r = this.parseFunction(el, inputJson, currentArrayElement);
-            let r = this.recursiveEvaluate(el, inputJson, currentArrayElement);
-            if (r && r.replaceElement) {
+            let output = this.recursiveEvaluate(el, inputJson, currentArrayElement);
+            if (output && output.replaceElement) {
                 if (!result) {
                     result = {};
                 }
-                result = Object.assign(result, r.result);
+                result = Object.assign(result, output.result);
             }
             else {
-                if (Array.isArray(r)) {
+                if (Array.isArray(output)) {
                     if (result === null) {
-                        result = r;
+                        result = output;
                     }
                     else if (Array.isArray(result)) {
-                        r.forEach(item => result.push(item));
+                        output.forEach(item => result.push(item));
                     } else {
-                        r.forEach(item => Object.assign(result, item));
+                        output.forEach(item => Object.assign(result, item));
                     }
                 }
                 else {
                     if (!result) {
                         result = {};
                     }
-                    result = Object.assign(result, !r || typeof r.result === 'undefined' ? r : r.result);
+                    result = Object.assign(result, !output || typeof output.result === 'undefined' ? output : output.result);
                 }
             }
         });
@@ -140,6 +176,7 @@ class JsonTransformer extends Transformer {
     parseKeyFunction(key, token, inputJson, currentElementArray) {
         let result = {};
         let properties = false;
+        let isBulk = false;
         let output = this.parseFunction(key, inputJson, currentElementArray);
         if (output || output === 0) {
             if (output.isProperty) {
@@ -162,13 +199,16 @@ class JsonTransformer extends Transformer {
                     elements = output.value;
                 }
                 result = this.parseLoop(token, elements, alias, properties, currentElementArray);
+            } else if (output.isBulk) {
+                result = this.parseBulk(token, inputJson, currentElementArray);
+                isBulk = true;
             } else {
                 result = this.recursiveEvaluate(token, inputJson, currentElementArray);
             }
         } else if (output === false) {
             result = {};
         }
-        return result;
+        return { value: result.value ? result.value : result, isProperty: result.isProperty, isLoop: result.isLoop, isBulk };
     }
 
     parseLoop(token, elements, alias, isPropertyLoop, currentElementArray) {
@@ -204,7 +244,34 @@ class JsonTransformer extends Transformer {
         });
         
         delete currentElementArray[alias];
-        return result;
+        return { value: result };
+    }
+
+    parseBulk(token, inputJson, currentArrayElement) {
+        let result = { };
+        token.forEach(el => {
+            let output = this.parseFunction(el, inputJson, currentArrayElement);
+            if (output && output.replaceElement) {
+                result = Object.assign(result, output.value);
+            } else {
+                this.validateKeys(output.value, result);
+                result = Object.assign(result, output.value);
+            }
+        });
+        return { isBulk: true, value: result };
+    }
+
+    validateKeys(output, result) {
+        let outputKeys = Object.keys(output);
+        let resultKeys = Object.keys(result);
+        
+        outputKeys.forEach(k => {
+            if (typeof output[k] === 'object' && typeof result[k] === 'object' && resultKeys.includes(k)) {
+                this.validateKeys(output[k], result[k]);
+            } else if (resultKeys.includes(k) && !this.isAddOrReplaceProperties(true)) {
+                throw { msg: 'Key already exists: ' + k };
+            }
+        });
     }
 
     parseFunction(str, inputJson, currentElementArray) {
@@ -233,8 +300,11 @@ class JsonTransformer extends Transformer {
         }
         return result.isProperty || result.isLoop ? 
             result : 
-            typeof result === 'string' ? expressionHelper.unescapeSharp(result) : 
-            result.value;
+            typeof result === 'string' ?
+                result === "#" ?
+                    { isBulk: true, value: result } :  
+                    expressionHelper.unescapeSharp(result) : 
+                result.value;
     }
 
     parseArgument(argument, inputJson, currentArrayElement) {
