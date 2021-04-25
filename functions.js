@@ -599,7 +599,7 @@ function execute(functionName, args, input, customFunctions) {
     
     let output = null;
     if (Object.keys(rootRelatedFunctions).includes(functionName)) {
-        input = args && args[1] ? args[1].root ? args[1].root : args[1] : input;
+        input = args && args[1] ? args[1].root ? args[1].root.element : args[1] : input;
         output = rootRelatedFunctions[functionName](input, ...args);
     } else if (Object.keys(tokenRelatedFunctions).includes(functionName)) {
         output = tokenRelatedFunctions[functionName](input, ...args);
