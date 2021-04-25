@@ -131,7 +131,7 @@ context('Loops', () => {
     });
 
     it('loop over properties', () => {
-        const input = '{ "animals": { "cat": { "legs": 4, "sound": "meow" }, "dog": { "legs": 4, "sound": "woof" } }, "spell_numbers": { \"3\": "three", \"2\": "two", \"1\": "one" } }';
+        const input = '{ "animals": { "cat": { "legs": 4, "sound": "meow" }, "dog": { "legs": 4, "sound": "woof" } }, "spell_numbers": { \"three_3\": "three", \"two_2\": "two", \"one_1\": "one" } }';
         const transformer = '{ "sounds": { "#loop($.animals)": { "#eval(#currentproperty())": "#currentvalueatpath($..sound)" } }, "number_index": { "#loop($.spell_numbers)": { "#eval(#currentindex())": "#currentvalueatpath(#concat($.,#currentproperty()))" } }}';
 
         var result = new JsonTransformer({ evaluationMode: [ 'strict' ]}).transform(transformer, input);

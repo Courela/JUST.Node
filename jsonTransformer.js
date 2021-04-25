@@ -24,7 +24,7 @@ class JsonTransformer extends Transformer {
         }
 
         let currentArrayElement = {};
-        currentArrayElement.root = inputJson;
+        currentArrayElement.root = { element: inputJson, index: null };
         if (Array.isArray(transformerJson)) {
             return this.transformArray(transformerJson, inputJson, currentArrayElement);
         } else {
@@ -222,9 +222,9 @@ class JsonTransformer extends Transformer {
         }
 
         let loopKeys = Object.keys(token);
-        elements.forEach(el => {
+        elements.forEach((el, i) => {
 
-            currentElementArray[alias] = el;
+            currentElementArray[alias] = { element: el, index: i };
             
             if (isPropertyLoop) {
                 loopKeys.forEach(key => {

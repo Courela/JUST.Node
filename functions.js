@@ -518,6 +518,14 @@ let arrayAndElementFunctions = {
 };
 
 function calculateAlias(obj, el, alias) {
+    return calculate(obj, el, alias).element;
+}
+
+function calculateIndex(obj, el, alias) {
+    return calculate(obj, el, alias).index;
+}
+
+function calculate(obj, el, alias) {
     let result = obj;
     if (el) {
         if (alias && el[alias]) {
@@ -544,9 +552,7 @@ function currentIndex(obj, alias, el) {
         el = alias;
         alias = null;
     }
-
-    el = calculateAlias(obj, el, alias);
-    return obj.indexOf(el);
+    return calculateIndex(obj, el, alias);
 }
 
 function lastValue(obj, alias, el) {
