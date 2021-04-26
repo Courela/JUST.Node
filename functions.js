@@ -133,13 +133,12 @@ function groupArrayBy(arr, path, groupingElement, groupedElement) {
     let result = [];
     try {
         if (!groupingElement.includes(":")) {
-            result = utilities.groupArray(null, valueof(arr, path), groupingElement, groupedElement);
+            result = utilities.groupArray(valueof(arr, path), groupingElement, groupedElement);
         } else {
-            //TODO
             let groupingElements = groupingElement.split(':');
-            result = utilities.groupArrayMultipleProperties(path, arr, groupingElements, groupedElement);
+            result = utilities.groupArrayMultipleProperties(valueof(arr, path), groupingElements, groupedElement);
         }
-    } catch (ex ){
+    } catch (ex) {
         return { default: [], msg: ex }; 
     }
     return result;

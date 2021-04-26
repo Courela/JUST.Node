@@ -1,6 +1,6 @@
 import functions from "./functions.js";
 
-function groupArray(path, arr, groupingElement, groupedElement) {
+function groupArray(arr, groupingElement, groupedElement) {
   let groupedPair = {};
 
   if (arr)
@@ -46,7 +46,7 @@ function groupArray(path, arr, groupingElement, groupedElement) {
   return resultObj;
 }
 
-function groupArrayMultipleProperties(array, groupingPropertyNames, groupedPropertyName, context) {
+function groupArrayMultipleProperties(array, groupingPropertyNames, groupedPropertyName) {
   let groupedPair = {};
 
   if (array)
@@ -55,7 +55,7 @@ function groupArrayMultipleProperties(array, groupingPropertyNames, groupedPrope
           let groupTokens = [];
 
           groupingPropertyNames.forEach(groupPropertyName => {
-              groupTokens.push(functions.execute('valueof', [ '$.' + groupPropertyName ], null, null));
+              groupTokens.push(functions.execute('valueof', [ '$.' + groupPropertyName ], eachObj, null).value);
           });
 
           if (groupTokens.length > 0)
@@ -102,16 +102,16 @@ function groupArrayMultipleProperties(array, groupingPropertyNames, groupedPrope
   }
 
   let resultObj = [];
-  groupedPair.forEach(pair => {
+  Object.keys(groupedPair).forEach(pair => {
       let groupObj = {};
 
-      let keys = pair.Key.split(':');
+      let keys = pair.split(':');
 
       groupingPropertyNames.forEach((groupPropertyName, i) => {
           groupObj[groupPropertyName] = keys[i];
       });
 
-      groupObj[groupedPropertyName] = pair.Value;
+      groupObj[groupedPropertyName] = groupedPair[pair];
 
       resultObj.push(groupObj);
 
