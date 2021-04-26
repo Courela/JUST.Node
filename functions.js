@@ -1,4 +1,5 @@
-import jsonpath from 'jsonpath'
+import jsonpath from 'jsonpath';
+import utilities from './utilities.js';
 
 let rootRelatedFunctions = {
     "valueof": valueof
@@ -128,16 +129,15 @@ function minAtPath(obj, arr, path) {
     return result;
 }
 
-function groupArrayBy(arr, groupingElement, groupedElement, path) {
+function groupArrayBy(arr, path, groupingElement, groupedElement) {
     let result = [];
     try {
-        if (!groupingElement.contains(":")) {
-            //TODO
-            result = Utilities.GroupArray(path, arr, groupingElement, groupedElement);
+        if (!groupingElement.includes(":")) {
+            result = utilities.groupArray(null, valueof(arr, path), groupingElement, groupedElement);
         } else {
             //TODO
             let groupingElements = groupingElement.split(':');
-            result = Utilities.GroupArrayMultipleProperties(path, arr, groupingElements, groupedElement);
+            result = utilities.groupArrayMultipleProperties(path, arr, groupingElements, groupedElement);
         }
     } catch (ex ){
         return { default: [], msg: ex }; 
