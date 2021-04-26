@@ -456,14 +456,14 @@ function copy(obj, path, str) {
     return { replaceElement: false, value: result && result.length === 1 ? result[0] : result };
 }
 
-function replace(obj, path, newObj, str) {
+function replace(obj, path, newObj) {
     let { navigatedObj, key } = findBulkObject(obj, path);
 
     navigatedObj[key] = newObj;
     return { replaceElement: true, value: obj };
 }
 
-function deleteFn(obj, path, str) {
+function deleteFn(obj, path) {
     let { navigatedObj, key } = findBulkObject(obj, path);
 
     delete navigatedObj[key];

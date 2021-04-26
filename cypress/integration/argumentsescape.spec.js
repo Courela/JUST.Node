@@ -52,6 +52,7 @@ context('Arguments Escape', () => {
     });
 
     it('nested functions escaped arguments', () => {
+        //#add result is not the same type of #xconcat (integer vs string), convert is needed
         const args = '#arg1,#xconcat(/#notfunc/(/), #constant_comma(),#xconcat(/,arg2.3.1,#constant_hash(),\'arg2.3.3),/,,#tostring(#add(3,2)))';
         const input = '{ "test\": "' + args + '" }';
         const transformer = '{ "result": "#xconcat(' + args + ',#constant_hash())" }';
@@ -62,6 +63,7 @@ context('Arguments Escape', () => {
     });
 
     it('mixed arguments', () => {
+        //#add result is not the same type of #xconcat (integer vs string), convert is needed
         const args = 'arg1' +
                 ',#xconcat(arg2.1,#constant_comma(),#xconcat(arg2.3.1,#constant_hash(),arg2.3.3),#tostring(#add(1,2)))' +
                 ',arg4/(.1/)' +

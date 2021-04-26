@@ -221,12 +221,30 @@ class JsonTransformer extends Transformer {
     parseBulk(token, inputJson, currentArrayElement) {
         let result = { };
         token.forEach(el => {
-            let output = this.parseFunction(el, inputJson, currentArrayElement);
-            if (output && output.replaceElement) {
-                result = Object.assign(result, output.value);
+            if (el.startsWith('#replace') || el.startsWith('#delete')) {
+                inputJson = result;
+            }
+
+            if (el.startsWith('#replace')) {
+                let func = expressionHelper.tryParseFunctionNameAndArguments(el);
+                if (func.success) {
+                    let functionName = func.functionName;
+                    let args = func.arguments;
+            
+                    args = expressionHelper.splitArguments(args);
+                    args[0] = this.parseFunction(args[0], inputJson, currentArrayElement);
+                    args[1] = this.parseFunction(args[1], inputJson, currentArrayElement);;
+                    let output = functions.execute(functionName, args, result, this.customFunctions);
+                    result = output.value.value;
+                }
             } else {
-                this.validateKeys(output.value, result);
-                result = Object.assign(result, output.value);
+                let output = this.parseFunction(el, inputJson, currentArrayElement);
+                if (output && output.replaceElement) {
+                    result = Object.assign(result, output.value);
+                } else {
+                    this.validateKeys(output.value, result);
+                    result = Object.assign(result, output.value);
+                }
             }
         });
         return { isBulk: true, value: result };
