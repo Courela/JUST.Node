@@ -52,6 +52,7 @@ class JsonTransformer extends Transformer {
                 }
             } else {
                 let keys = Object.keys(result);
+                let bulkResult = null;
                 for (let i = 0; i < keys.length; i++) {
                     const key = keys[i];
                     const token = result[key];
@@ -78,11 +79,16 @@ class JsonTransformer extends Transformer {
                                 this.parseFunction(token, inputJson, currentElementArray) :
                                 this.recursiveEvaluate(token, inputJson, currentElementArray);
                         } else {
-                            result = typeof fnResult === 'string' ? 
-                                fnResult : 
-                                this.isAddOrReplaceProperties(isBulk) ? 
-                                    this.addOrReplaceProperties(result, fnResult) : 
-                                    Object.assign(result, fnResult);
+                            if (this.isAddOrReplaceProperties(isBulk)) {
+                                bulkResult = this.addOrReplaceProperties({}, fnResult);
+                                if (i === keys.length - 1) {
+                                    result = Object.assign(bulkResult, result);
+                                }
+                            } else {
+                                result = typeof fnResult === 'string' ? 
+                                    fnResult :  
+                                    Object.assign(result, bulkResult ? bulkResult : fnResult);
+                            }
                         }
                     } else if (token) {
                         let output = null;
@@ -91,11 +97,14 @@ class JsonTransformer extends Transformer {
                         } else if (typeof token === 'string') {
                             output = this.parseFunction(token, inputJson, currentElementArray);
                         } else {
-                            output = this.recursiveEvaluate(token, inputJson, currentElementArray);
+                            output = this.recursiveEvaluate(token, inputJson, currentElementArray, isBulk);
                         }
 
                         output = this.handleEvaluationMode(output);
                         result[key] = output;
+                        if (bulkResult && i === keys.length - 1) {
+                            result = this.addOrReplaceProperties(result, bulkResult);
+                        }
                     }
                 }
             }
