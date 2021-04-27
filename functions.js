@@ -443,6 +443,9 @@ let conditionalFunctions = {
 };
 
 function ifGroup(val) {
+    if (val !== true && val !== false) {
+        throw 'Invalid value!';
+    }
     return val;
 }
 
