@@ -131,7 +131,7 @@ context('Loops', () => {
     });
 
     it('loop over properties', () => {
-        const input = '{ "animals": { "cat": { "legs": 4, "sound": "meow" }, "dog": { "legs": 4, "sound": "woof" } }, "spell_numbers": { \"three_3\": "three", \"two_2\": "two", \"one_1\": "one" } }';
+        const input = '{ "animals": { "cat": { "legs": 4, "sound": "meow" }, "dog": { "legs": 4, "sound": "woof" } }, "spell_numbers": { \"t_3\": "three", \"t_2\": "two", \"o_1\": "one" } }';
         const transformer = '{ "sounds": { "#loop($.animals)": { "#eval(#currentproperty())": "#currentvalueatpath($..sound)" } }, "number_index": { "#loop($.spell_numbers)": { "#eval(#currentindex())": "#currentvalueatpath(#concat($.,#currentproperty()))" } }}';
 
         var result = new JsonTransformer({ evaluationMode: [ 'strict' ]}).transform(transformer, input);
@@ -179,7 +179,7 @@ context('Loops', () => {
 
     it('looping alias', () => {
         const input = '{ "NestedLoop": { "Organization": { "Employee": [ { "Name": "E2", "Details": [ { "Country": "Iceland", "Age": "30", "Name": "Sven", "Language": "Icelandic", "Roles": [ { "Job": "Janitor", "Salary": 100 }, { "Job": "Security", "Salary": 200 } ] } ] }, { "Name": "E1", "Details": [ { "Country": "Denmark", "Age": "30", "Name": "Svein", "Language": "Danish", "Roles": [ { "Job": "Manager", "Salary": 300 }, { "Job": "Developer", "Salary": 400 } ] } ] } ] } } }';
-        const transformer = '{ "hello": { "#loop($.NestedLoop.Organization.Employee, employee)": { "Details": { "#loop($.Details, details)": { "CurrentCountry": "#currentvalueatpath($.Country, details)", "OuterName": "#currentvalueatpath($.Name, employee)", "FirstLevel": { "#loop($.Roles, roles)": { "Employee": "#currentvalue(employee)", "Job": "#currentvalueatpath($.Job, roles)" } } } } } } }';
+        const transformer = '{ "hello": { "#loop($.NestedLoop.Organization.Employee,employee)": { "Details": { "#loop($.Details,details)": { "CurrentCountry": "#currentvalueatpath($.Country,details)", "OuterName": "#currentvalueatpath($.Name,employee)", "FirstLevel": { "#loop($.Roles,roles)": { "Employee": "#currentvalue(employee)", "Job": "#currentvalueatpath($.Job,roles)" } } } } } } }';
 
         var result = new JsonTransformer(null).transform(transformer, input);
 
@@ -207,7 +207,7 @@ context('Loops', () => {
 
     it('inside loop over root', () => {
         const input = '{ "ontologyElements": [ { "id": "8b8b9d6e-4574-466b-b2c3-0062ad0642fe", "name": "Ontology1", "description": "test1", "entityType": "Ontology" }, { "id": "3ac89bbd-0de2-4692-a077-1d5d41efab69", "name": "MainType1", "order": 1, "entityType": "MainType", "ontologyId": "8b8b9d6e-4574-466b-b2c3-0062ad0642fe" }, { "id": "97aa4eb2-0515-43d6-ba59-ffd931956b1a", "name": "SubType1", "order": 1, "entityType": "SubType", "ontologyId": "8b8b9d6e-4574-466b-b2c3-0062ad0642fe", "mainTypeId": "3ac89bbd-0de2-4692-a077-1d5d41efab69" } ] }';
-        const transformer = '{ "id": "#valueof($.ontologyElements[?(@.entityType == \'Ontology\')].id)", "description": "#valueof($.ontologyElements[?(@.entityType == \'Ontology\')].description)", "maintypes": { "#loop($.ontologyElements[?(@.entityType == \'MainType\')])" : { "id": "#currentvalueatpath($.id)", "name": "#currentvalueatpath($.name)", "order": "#currentvalueatpath($.order)", "subTypes" : { "#loop($.ontologyElements[?/(@.entityType == \'SubType\' && @.ontologyId == \'8b8b9d6e-4574-466b-b2c3-0062ad0642fe\'/)], insideLoop, root)": { "name": "#currentvalueatpath($.name, insideLoop)" } } } } }';
+        const transformer = '{ "id": "#valueof($.ontologyElements[?(@.entityType == \'Ontology\')].id)", "description": "#valueof($.ontologyElements[?(@.entityType == \'Ontology\')].description)", "maintypes": { "#loop($.ontologyElements[?(@.entityType == \'MainType\')])" : { "id": "#currentvalueatpath($.id)", "name": "#currentvalueatpath($.name)", "order": "#currentvalueatpath($.order)", "subTypes" : { "#loop($.ontologyElements[?/(@.entityType == \'SubType\' && @.ontologyId == \'8b8b9d6e-4574-466b-b2c3-0062ad0642fe\'/)],insideLoop,root)": { "name": "#currentvalueatpath($.name,insideLoop)" } } } } }';
 
         var result = new JsonTransformer({ evaluationMode: [ 'strict' ]}).transform(transformer, input);
 
@@ -216,7 +216,7 @@ context('Loops', () => {
 
     it('dynamic expression', () => {
         const input = '{ "ontologyElements": [ { "id": "8b8b9d6e-4574-466b-b2c3-0062ad0642fe", "name": "Ontology1", "description": "test1", "entityType": "Ontology" }, { "id": "3ac89bbd-0de2-4692-a077-1d5d41efab69", "name": "MainType1", "order": 1, "entityType": "MainType", "ontologyId": "8b8b9d6e-4574-466b-b2c3-0062ad0642fe" }, { "id": "97aa4eb2-0515-43d6-ba59-ffd931956b1a", "name": "SubType1", "order": 1, "entityType": "SubType", "ontologyId": "8b8b9d6e-4574-466b-b2c3-0062ad0642fe", "mainTypeId": "3ac89bbd-0de2-4692-a077-1d5d41efab69" } ] }';
-        const transformer = '{ "id": "#valueof($.ontologyElements[?(@.entityType == \'Ontology\')].id)", "description": "#valueof($.ontologyElements[?(@.entityType == \'Ontology\')].description)", "maintypes": { "#loop($.ontologyElements[?(@.entityType == \'MainType\')])" : { "id": "#currentvalueatpath($.id)", "name": "#currentvalueatpath($.name)", "order": "#currentvalueatpath($.order)", "subTypes" : { "#loop(#xconcat($.ontologyElements[?/(@.entityType == \'SubType\' && @.ontologyId == \', #currentvalueatpath($.ontologyId),\'/)]), #concat(inside,Loop), #concat(ro, ot))": { "name": "#currentvalueatpath($.name,insideLoop)" } } } } }';
+        const transformer = '{ "id": "#valueof($.ontologyElements[?(@.entityType == \'Ontology\')].id)", "description": "#valueof($.ontologyElements[?(@.entityType == \'Ontology\')].description)", "maintypes": { "#loop($.ontologyElements[?(@.entityType == \'MainType\')])" : { "id": "#currentvalueatpath($.id)", "name": "#currentvalueatpath($.name)", "order": "#currentvalueatpath($.order)", "subTypes" : { "#loop(#xconcat($.ontologyElements[?/(@.entityType == \'SubType\' && @.ontologyId == \', #currentvalueatpath($.ontologyId),\'/)]), #concat(inside,Loop), #concat(ro,ot))": { "name": "#currentvalueatpath($.name,insideLoop)" } } } } }';
 
         var result = new JsonTransformer({ evaluationMode: [ 'strict' ]}).transform(transformer, input);
 

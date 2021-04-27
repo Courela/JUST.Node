@@ -114,7 +114,6 @@ class JsonTransformer extends Transformer {
                 }
             }
 
-            //let r = this.parseFunction(el, inputJson, currentArrayElement);
             let output = this.recursiveEvaluate(el, inputJson, currentArrayElement);
             if (output && output.replaceElement) {
                 if (!result) {
@@ -198,6 +197,8 @@ class JsonTransformer extends Transformer {
             currentElementArray[alias] = { element: el, index: i };
             
             if (isPropertyLoop) {
+                //for loop over properties, properties cannot be string numbers, 
+                //it will convert automatically to numbers 
                 loopKeys.forEach(key => {
                     let prop = el;
                     if (key.startsWith('#')) {
