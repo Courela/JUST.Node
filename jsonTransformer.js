@@ -279,9 +279,11 @@ class JsonTransformer extends Transformer {
                 result = this.parseArgument(args[index], inputJson, currentElementArray);
                 return result;
             } else if (Array.isArray(args)) {
-                args.forEach((el, i) => {
-                    args[i] = this.recursiveEvaluate(el, inputJson, currentElementArray);
-                });
+                if (functionName !== 'applyover') {
+                    args.forEach((el, i) => {
+                        args[i] = this.recursiveEvaluate(el, inputJson, currentElementArray);
+                    });
+                }
                 if (Object.keys(currentElementArray).length > 1) {
                     args.push(currentElementArray)
                 }

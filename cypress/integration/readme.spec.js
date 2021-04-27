@@ -158,7 +158,7 @@ context('Readme', () => {
 
     it('apply over', () => {
         const input = '{"d": [ "one", "two", "three" ], "values": [ "z", "c", "n" ]}';
-        const transformer = '{ "result": "#applyover({ \'condition\': { \'#loop($.values)\': { \'test\': \'#ifcondition(#stringcontains(#valueof($.d[0]),#currentvalue()),True,yes,no)\' } } }, \'#exists($.condition[?(@.test==\'yes\')])\')" }';
+        const transformer = '{ "result": "#applyover({ \\"condition\\": { \\"#loop($.values)\\": { \\"test\\": \\"#ifcondition(#stringcontains(#valueof($.d[0]),#currentvalue()),true,yes,no)\\" } } },#exists($.condition[?(@.test==\'yes\')]))" }';
 
         var result = new JsonTransformer({ evaluationMode: [ 'strict' ] }).transform(transformer, input);
 

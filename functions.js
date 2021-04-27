@@ -1,4 +1,5 @@
 import jsonpath from 'jsonpath';
+import JsonTransformer from './jsonTransformer.js';
 import utilities from './utilities.js';
 
 let rootRelatedFunctions = {
@@ -20,7 +21,8 @@ let tokenRelatedFunctions = {
     "max": max,
     "min": min,
     "length": length,
-    "loop": loop
+    "loop": loop,
+    "applyover": applyOver
 };
 
 function valueof(obj, path) {
@@ -241,6 +243,13 @@ function loop(obj, path, alias, loopOverAlias, el) {
     } else {
         return valueof(obj, path);
     }
+}
+
+function applyOver(input, transformerBefore, transformerAfter) {
+    let jsonTransformer = new JsonTransformer();
+    let output = jsonTransformer.transform(transformerBefore, input);
+    let result = jsonTransformer.parseFunction(transformerAfter, output, {});
+    return result;
 }
 
 let autonomousFunctions = {
