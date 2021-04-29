@@ -1,7 +1,6 @@
 {
-  "type": "module",
-  "name": "just",
-  "version": "4.0.2",
+  "name": "@courela/just",
+  "version": "0.0.1-beta",
   "description": "JUST for node. Transform Json documents using JUST language.",
   "keywords": [
     "json",
@@ -9,7 +8,6 @@
   ],
   "homepage": "https://github.com/WorkMaze/JUST.net",
   "license": "MIT",
-  "main": "just",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Courela/JUST.Node.git"
@@ -18,17 +16,44 @@
     "jsonpath": "^1.1.0"
   },
   "devDependencies": {
-    "cypress": "^6.7.1"
+    "@cypress/code-coverage": "^3.9.4",
+    "cypress": "^6.7.1",
+    "nyc": "^15.1.0"
   },
   "bugs": {
     "url": "https://github.com/WorkMaze/JUST.net/issues"
   },
   "scripts": {
     "start": "node.exe app.js",
-    "test": "cypress open"
+    "instrument": "nyc instrument . instrumented",
+    "test": "npm run instrument & cypress open"
   },
   "author": "Courela",
   "publishConfig": {
     "registry": "https://npm.pkg.github.com"
+  },
+  "nyc": {
+    "instrumentation": {
+      "excludes": [
+        "cypress/plugins/**",
+        "cypress/support/**",
+        "coverage/**",
+        "instrumented/**",
+        "**/cypress/plugins/**",
+        "**/cypress/support/**",
+        "**/coverage/**",
+        "**/instrumented/**"
+      ]
+    },
+    "exclude": [
+      "cypress/plugins/**",
+      "cypress/support/**",
+      "coverage/**",
+      "instrumented/**",
+      "**/cypress/plugins/**",
+      "**/cypress/support/**",
+      "**/coverage/**",
+      "**/instrumented/**"
+    ]
   }
 }

@@ -1,3 +1,6 @@
+.nyc_output
 node_modules/
 cypress/screenshots/
 cypress/videos/
+coverage
+instrumented

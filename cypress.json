@@ -1,3 +1,4 @@
 {
-  "pluginsFile": false 
+  "fixturesFolder": false,
+  "integrationFolder": "./instrumented/cypress/integration"
 }

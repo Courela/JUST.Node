@@ -1,0 +1,11 @@
+.nyc_output
+.vscode
+coverage
+cypress
+instrumented
+node_modules
+.gitignore
+cypress.json
+README.md
+app.js
+externalMethods.js
