@@ -26,7 +26,8 @@
   "scripts": {
     "start": "node.exe app.js",
     "instrument": "nyc instrument . instrumented",
-    "test": "npm run instrument & cypress open"
+    "test": "cypress open",
+    "test-coverage": "npm run instrument & cypress open --config-file cypress_coverage.json"
   },
   "author": "Courela",
   "publishConfig": {
