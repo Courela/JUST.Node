@@ -33,27 +33,11 @@
     "registry": "https://npm.pkg.github.com"
   },
   "nyc": {
-    "instrumentation": {
-      "excludes": [
-        "cypress/plugins/**",
-        "cypress/support/**",
-        "coverage/**",
-        "instrumented/**",
-        "**/cypress/plugins/**",
-        "**/cypress/support/**",
-        "**/coverage/**",
-        "**/instrumented/**"
-      ]
-    },
     "exclude": [
       "cypress/plugins/**",
       "cypress/support/**",
       "coverage/**",
-      "instrumented/**",
-      "**/cypress/plugins/**",
-      "**/cypress/support/**",
-      "**/coverage/**",
-      "**/instrumented/**"
+      "instrumented/**"
     ]
   }
 }
