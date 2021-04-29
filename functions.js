@@ -56,11 +56,9 @@ function existsAndNotEmpty(obj, path, el) {
 function concatAllAtPath(obj, arr, path) {
     let result = '';
     try {
-        if (arr && arr.length > 0) {
-            arr.forEach(el => {
-                result = concat(result, valueof(el, path)); //valueof(el, path);
-            });
-        }
+        arr.forEach(el => {
+            result = concat(result, valueof(el, path));
+        });
     } catch (ex) {
         result = { default: null, msg: 'Invalid value in array to concatenate!' };
     }
@@ -69,64 +67,56 @@ function concatAllAtPath(obj, arr, path) {
 
 function sumAtPath(obj, arr, path) {
     let result = 0;
-    if (arr && arr.length > 0) {
-        try {
-            arr.forEach(el => {
-                result += Number(valueof(el, path));
-            });
-        } catch (ex) {
-            return { default: result, msg: ex };
-        }
+    try {
+        arr.forEach(el => {
+            result += Number(valueof(el, path));
+        });
+    } catch (ex) {
+        return { default: result, msg: ex };
     }
     return result;
 }
 
 function averageAtPath(obj, arr, path) {
     let result = 0;
-    if (arr && arr.length > 0) {
-        try {
-            arr.forEach(el => {
-                result += Number(valueof(el, path));
-            });
-        } catch (ex) {
-            return { default: result, msg: ex };
-        }
+    try {
+        arr.forEach(el => {
+            result += Number(valueof(el, path));
+        });
+    } catch (ex) {
+        return { default: result, msg: ex };
     }
     return result / arr.length;
 }
 
 function maxAtPath(obj, arr, path) {
     let result = null;
-    if (arr && arr.length > 0) {
-        try {
-            arr.forEach(el => {
-                if (result === null) {
-                    result = Number(valueof(el, path));
-                } else {
-                    result = Math.max(Number(valueof(el, path)), result);
-                }
-            });
-        } catch (ex) {
-            return { default: result, msg: ex }; 
-        }
+    try {
+        arr.forEach(el => {
+            if (result === null) {
+                result = Number(valueof(el, path));
+            } else {
+                result = Math.max(Number(valueof(el, path)), result);
+            }
+        });
+    } catch (ex) {
+        return { default: result, msg: ex }; 
     }
     return result;
 }
 
 function minAtPath(obj, arr, path) {
     let result = null;
-    if (arr && arr.length > 0) {
-        try {
-            arr.forEach(el => {
-                if (result === null) {
-                    result = Number(valueof(el, path));
-                } else {
-                    result = Math.min(Number(valueof(el, path)), result);
-                }
-            });
-        } catch (ex) {
-            return { default: null, msg: ex }; 
-        }
+    try {
+        arr.forEach(el => {
+            if (result === null) {
+                result = Number(valueof(el, path));
+            } else {
+                result = Math.min(Number(valueof(el, path)), result);
+            }
+        });
+    } catch (ex) {
+        return { default: null, msg: ex }; 
     }
     return result;
 }
@@ -253,7 +243,6 @@ function applyOver(input, transformerBefore, transformerAfter) {
 }
 
 let autonomousFunctions = {
-    "ifcondition": ifCondition,
     "concat": concat,
     "substring": substring,
     "firstindexof": firstIndexOf,
@@ -277,10 +266,6 @@ let autonomousFunctions = {
     "round": round,
     "eval": evalFn
 };
-
-function ifCondition(condition, val, trueResult, falseResult) {
-    return condition == val ? trueResult : falseResult;
-}
 
 function concat(str1, str2) {
     let result = '';
