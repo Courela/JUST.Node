@@ -31,6 +31,24 @@ context('Existance', () => {
         expect(result).to.deep.equal({ IsBought: true, HasExpireDate: false, HasDefects: false, HasNotes: false});
     });
 
+    it('exists and not empty array', () => {
+        const input = '{ "BuyDate": "2017-04-10T11:36:39+03:00", "Defects": "", "Notes": [ "Note1" ] }';
+        const transformer = '{ "IsBought": "#existsandnotempty($.BuyDate)", "HasExpireDate": "#existsandnotempty($.ExpireDate)", "HasDefects": "#existsandnotempty($.Defects)", "HasNotes": "#existsandnotempty($.Notes)" }';
+
+        var result = new JsonTransformer(null).transform(transformer, input);
+
+        expect(result).to.deep.equal({ IsBought: true, HasExpireDate: false, HasDefects: false, HasNotes: true});
+    });
+
+    it('exists but empty array', () => {
+        const input = '{ "BuyDate": "2017-04-10T11:36:39+03:00", "Defects": "", "Notes": [ ] }';
+        const transformer = '{ "IsBought": "#existsandnotempty($.BuyDate)", "HasExpireDate": "#existsandnotempty($.ExpireDate)", "HasDefects": "#existsandnotempty($.Defects)", "HasNotes": "#existsandnotempty($.Notes)" }';
+
+        var result = new JsonTransformer(null).transform(transformer, input);
+
+        expect(result).to.deep.equal({ IsBought: true, HasExpireDate: false, HasDefects: false, HasNotes: false });
+    });
+
     it('exists', () => {
         const input = '{ "path": "$.BuyDate", "BuyDate": "2017-04-10T11:36:39+03:00", "Defects": "", "Notes": null }';
         const transformer = '{ "IsBought": "#existsandnotempty(#valueof($.path))", "HasExpireDate": "#existsandnotempty($.ExpireDate)", "HasDefects": "#existsandnotempty($.Defects)", "HasNotes": "#existsandnotempty($.Notes)" }';

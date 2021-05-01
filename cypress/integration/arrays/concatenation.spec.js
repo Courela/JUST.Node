@@ -103,6 +103,22 @@ context('Concatenation', () => {
         expect(result).to.deep.equal({ result: [{ prop1: "prop1" },{ prop2: null },{ prop3: "prop3" },{ prop4: "prop4" },{ prop5: null },{ prop1: "prop1" },{ prop2: null },{ prop3: "prop3" }]});
     });
 
+    it('concat fallback to default', () => {
+        const input = '{ "value1": 0, "value2": [{ "prop2": null }] }';
+        const transformer = '{ "result": "#concat(#valueof($.value1), #valueof($.value2))" }';
+
+        var result = new JsonTransformer({ evaluationMode: [ 'fallbackToDefault' ] }).transform(transformer, input);
+
+        expect(result).to.deep.equal({ result: null });
+    });
+
+    it('concat strict', () => {
+        const input = '{ "value1": 0, "value2": [{ "prop2": null }] }';
+        const transformer = '{ "result": "#concat(#valueof($.value1), #valueof($.value2))" }';
+
+        expect(() => new JsonTransformer({ evaluationMode: [ 'strict' ] }).transform(transformer, input)).to.throw('Invalid value to concatenate!');
+    });
+
     it('xconcat nulls', () => {
         const input = '{ "value1": null, "value2": null }';
         const transformer = '{ "result": "#xconcat(#valueof($.value1), #valueof($.value2))" }';
@@ -200,5 +216,21 @@ context('Concatenation', () => {
         var result = new JsonTransformer({ evaluationMode: [ 'strict' ] }).transform(transformer, input);
 
         expect(result).to.deep.equal({ result: [{ prop1: "prop1" },{ prop2: null },{ prop3: "prop3" },{ prop4: "prop4" },{ prop5: null },{ prop1: "prop1" },{ prop2: null },{ prop3: "prop3" }]});
+    });
+
+    it('xconcat fallback to default', () => {
+        const input = '{ "value1": 0, "value2": [{ "prop4": "prop4" },{ "prop5": null }] }';
+        const transformer = '{ "result": "#xconcat(#valueof($.value1), #valueof($.value2))" }';
+
+        var result = new JsonTransformer({ evaluationMode: [ 'fallbackToDefault' ] }).transform(transformer, input);
+
+        expect(result).to.deep.equal({ result: null });
+    });
+
+    it('xconcat strict', () => {
+        const input = '{ "value1": 0, "value2": [{ "prop4": "prop4" },{ "prop5": null }] }';
+        const transformer = '{ "result": "#xconcat(#valueof($.value1), #valueof($.value2))" }';
+
+        expect(() => new JsonTransformer({ evaluationMode: [ 'strict' ] }).transform(transformer, input)).to.throw('Invalid value to concatenate!');
     });
 });

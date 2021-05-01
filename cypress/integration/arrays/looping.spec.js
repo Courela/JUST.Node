@@ -94,6 +94,15 @@ context('Loops', () => {
         expect(result).to.deep.equal({ iteration: [{ last_value_at_path: { name: "Sweden", language: "swedish" }},{ last_value_at_path: { name: "Sweden", language: "swedish" }}, { last_value_at_path: { name: "Sweden", language: "swedish" }} ] });
     });
 
+    it('last value at path root', () => {
+        const input = '{ "arrayobjects\": [ { "country": { "name": "Norway", "language": "norsk" } }, { "country": { "name": "UK", "language": "english" } }, { "country": { "name": "Sweden", "language": "swedish" } }] }';
+        const transformer = '{ "iteration": { "#loop($.arrayobjects)": { "last_value_at_path": "#lastvalueatpath($)" } } }';
+
+        var result = new JsonTransformer(null).transform(transformer, input);
+
+        expect(result).to.deep.equal({ iteration: [{ last_value_at_path: { country: { name: "Sweden", language: "swedish" } } },{ last_value_at_path: { country: { name: "Sweden", language: "swedish" } } }, { last_value_at_path: { country: { name: "Sweden", language: "swedish" } } }] });
+    });
+
     it('nested looping', () => {
         const input = '{ "NestedLoop": { "Organization": { "Employee": [ { "Name": "E2", "Details": [ { "Country": "Iceland", "Age": "30", "Name": "Sven", "Language": "Icelandic", "Roles": [ { "Job": "Janitor", "Salary": 100 }, { "Job": "Security", "Salary": 200 } ] } ] }, { "Name": "E1", "Details": [ { "Country": "Denmark", "Age": "30", "Name": "Svein", "Language": "Danish", "Roles": [ { "Job": "Manager", "Salary": 300 }, { "Job": "Developer", "Salary": 400 } ] } ] } ] } } }';
         const transformer = '{ "hello": { "#loop($.NestedLoop.Organization.Employee)": { "Details": { "#loop($.Details)": { "CurrentCountry": "#currentvalueatpath($.Country)" } } } } }';

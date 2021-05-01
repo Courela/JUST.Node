@@ -15,4 +15,11 @@ context('Registered Custom Functions', () => {
 
         expect(result).to.deep.equal({ result: "External Static"});
     });
+
+    it('invalid function', () => {
+        const input = '{ }';
+        const transformer = '{ "result": "#StaticMethod()" }';
+
+        expect(() => new JsonTransformer(null).transform(transformer, input)).to.throw('Invalid function: StaticMethod');
+    });
 });
