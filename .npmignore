@@ -1,3 +1,4 @@
+.npmrc
 .nyc_output
 .vscode
 coverage
@@ -6,6 +7,7 @@ instrumented
 node_modules
 .gitignore
 cypress.json
+cypress_coverage.json
 README.md
 app.js
 externalMethods.js
