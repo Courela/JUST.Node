@@ -13,21 +13,19 @@ class Transformer {
     }
 
     handleEvaluationMode(result, previousResult) {
-        if (this.context) {
-            if (Array.isArray(this.context.evaluationMode)) {
-                this.context.evaluationMode.forEach(el => {
-                     result = this.parseEvaluationMode(el, result, previousResult);      
-                });
-                if (Array.isArray(previousResult) && !this.context.evaluationMode.includes('joinArrays')) {
-                    previousResult.push(result);
-                    result = previousResult;
-                }
-            } else if (typeof this.context.evaluationMode === 'string') {
-                result = this.parseEvaluationMode(this.context.evaluationMode, result, previousResult);
-                if (Array.isArray(previousResult) && !this.context.evaluationMode !== 'joinArrays') {
-                    previousResult.push(result);
-                    result = previousResult;
-                }
+        if (Array.isArray(this.context.evaluationMode)) {
+            this.context.evaluationMode.forEach(el => {
+                    result = this.parseEvaluationMode(el, result, previousResult);      
+            });
+            if (Array.isArray(previousResult) && !this.context.evaluationMode.includes('joinArrays')) {
+                previousResult.push(result);
+                result = previousResult;
+            }
+        } else if (typeof this.context.evaluationMode === 'string') {
+            result = this.parseEvaluationMode(this.context.evaluationMode, result, previousResult);
+            if (Array.isArray(previousResult) && this.context.evaluationMode !== 'joinArrays') {
+                previousResult.push(result);
+                result = previousResult;
             }
         }
         return result;
@@ -59,7 +57,6 @@ class Transformer {
     }
 
     joinArrays(result, previousResult) {
-        // let output = [];
         if (typeof previousResult === 'undefined') {
             return result;
         }
