@@ -32,7 +32,7 @@
   },
   "author": "Courela",
   "publishConfig": {
-    "registry": "https://npm.pkg.github.com"
+    "registry": "https://registry.npmjs.org"
   },
   "nyc": {
     "exclude": [
