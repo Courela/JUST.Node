@@ -55,7 +55,7 @@ class JsonTransformer extends Transformer {
                 let bulkResult = null;
                 for (let i = 0; i < keys.length; i++) {
                     const key = keys[i];
-                    const token = result[key];
+                    const token = result[key] ? result[key] : parentToken[key];
                     if (key && key.trim().startsWith('#')) {
                         let output =  this.parseKeyFunction(key, token, inputJson, currentElementArray);
                         let fnResult = output.value;
@@ -71,7 +71,11 @@ class JsonTransformer extends Transformer {
                         delete result[key];
 
                         if (Array.isArray(fnResult)) {
-                            result = fnResult;
+                            if (Array.isArray(result)) {
+                                fnResult.forEach(el => result.push(el));
+                            } else {
+                                result = fnResult;
+                            }
                         } else if (fnResult === null) {
                             return null;
                         } else if (output.isProperty) {
@@ -244,11 +248,11 @@ class JsonTransformer extends Transformer {
                     args = expressionHelper.splitArguments(args);
                     args[0] = this.parseFunction(args[0], inputJson, currentArrayElement);
                     args[1] = this.parseFunction(args[1], inputJson, currentArrayElement);;
-                    let output = functions.execute(functionName, args, result, this.customFunctions);
+                    let output = functions.execute(functionName, args, result, this.customFunctions, true);
                     result = output.value.value;
                 }
             } else {
-                let output = this.parseFunction(el, inputJson, currentArrayElement);
+                let output = this.parseFunction(el, inputJson, currentArrayElement, true);
                 if (output && output.replaceElement) {
                     result = Object.assign(result, output.value);
                 } else {
@@ -273,7 +277,7 @@ class JsonTransformer extends Transformer {
         });
     }
 
-    parseFunction(str, inputJson, currentElementArray) {
+    parseFunction(str, inputJson, currentElementArray, isBulk) {
         let result = str;
         let func = expressionHelper.tryParseFunctionNameAndArguments(str);
         if (func.success) {
@@ -296,7 +300,7 @@ class JsonTransformer extends Transformer {
                 if (Object.keys(currentElementArray).length > 1) {
                     args.push(currentElementArray)
                 }
-                result = functions.execute(functionName, args, inputJson, this.customFunctions);
+                result = functions.execute(functionName, args, inputJson, this.customFunctions, isBulk);
             }
         }
         return result.isProperty || result.isLoop ? 

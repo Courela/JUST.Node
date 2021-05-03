@@ -632,11 +632,17 @@ function lastValueAtPath(obj, path, alias, el) {
     return valueof(el, path);
 }
 
-function execute(functionName, args, input, customFunctions) {
+function execute(functionName, args, input, customFunctions, isBulk) {
     let result = null;
     
     let output = null;
-    if (Object.keys(rootRelatedFunctions).includes(functionName)) {
+    if(isBulk) {
+        if (Object.keys(bulkFunctions).includes(functionName)) {
+            output = bulkFunctions[functionName](input, ...args);
+        } else {
+            throw 'Invalid function for bulk!';
+        }
+    } else if (Object.keys(rootRelatedFunctions).includes(functionName)) {
         input = args && args[1] ? args[1].root ? args[1].root.element : args[1] : input;
         output = rootRelatedFunctions[functionName](input, ...args);
     } else if (Object.keys(tokenRelatedFunctions).includes(functionName)) {
@@ -647,8 +653,6 @@ function execute(functionName, args, input, customFunctions) {
         output = conditionalFunctions[functionName](...args);
     } else if (Object.keys(decimalPlacesFunctions).includes(functionName)) {
         output = decimalPlacesFunctions[functionName](...args);
-    } else if (Object.keys(bulkFunctions).includes(functionName)) {
-        output = bulkFunctions[functionName](input, ...args);
     } else if (Object.keys(concatenationFunctions).includes(functionName)) {
         if (typeof args[args.length - 1] === 'object' && !Array.isArray(args[args.length - 1])) {
             args.pop();

@@ -240,4 +240,13 @@ context('Loops', () => {
 
         expect(result).to.deep.equal({ result: [{ Name: "E2" },{ Name: "E1"}] });
     });
+
+    it('two loops single property', () => {
+        const input = '{ "ComponentA": [ { "ComponentAId": 1, "ComponentAType": "T1", "ComponentAKind": "K1" } ], "ComponentB": [ { "ComponentBId": 2, "ComponentBType": "T2", "ComponentBKind": "K2" } ]}';
+        const transformer = '{ "GenericComponent": { "#loop($.ComponentA)": { "GenericComponentId": "#currentvalueatpath($.ComponentAId)", "GenericComponentType": "#currentvalueatpath($.ComponentAType)", "GenericComponentKind": "#currentvalueatpath($.ComponentAKind)" }, "#loop($.ComponentB)": { "GenericComponentId": "#currentvalueatpath($.ComponentBId)", "GenericComponentType": "#currentvalueatpath($.ComponentBType)", "GenericComponentKind": "#currentvalueatpath($.ComponentBKind)" } }}';
+
+        var result = new JsonTransformer(null).transform(transformer, input);
+
+        expect(result).to.deep.equal({ GenericComponent: [{ GenericComponentId: 1, GenericComponentType: "T1", GenericComponentKind: "K1" },{ GenericComponentId: 2, GenericComponentType: "T2", GenericComponentKind: "K2" }] });
+    });
 });

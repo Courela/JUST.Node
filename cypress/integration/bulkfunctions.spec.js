@@ -138,4 +138,11 @@ context('Bulk Functions', () => {
 
         expect(result).to.deep.equal({ popup: { menuitem: [], submenuitem: "CloseSession()" }, id: { file: "csv"}, value: { Window: "popup" }});
     });
+
+    it('invalid function', () => {
+        const input = '{ "menu": { "id": { "file": "csv" }, "value": { "Window": "popup" }, "popup": { "menuitem": [ { "value": "New", "onclick": { "action": "CreateNewDoc()" } }, { "value": "Open", "onclick": "OpenDoc()" }, { "value": "Close", "onclick": "CloseDoc()" } ], "submenuitem": "CloseSession()" } } }';
+        const transformer = '{ "#": [ "#concat($.,menu)" ], "popup": { "menuitem": [] } }';
+
+        expect(() => new JsonTransformer({ }).transform(transformer, input)).to.throw('Invalid function for bulk!');
+    });
 });
