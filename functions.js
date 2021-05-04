@@ -178,7 +178,7 @@ function sum(obj, pathOrArray) {
             result += ensureNumber(el);
         });
     } catch (ex) {
-        return { default: null, msg: ex }; 
+        return { default: 0, msg: ex }; 
     }
     return result;
 }
@@ -193,7 +193,7 @@ function average(obj, pathOrArray) {
             result += ensureNumber(el);
         });
     } catch (ex) {
-        return { default: null, msg: ex }; 
+        return { default: 0, msg: ex }; 
     }
     return result / pathOrArray.length;
 }
@@ -212,7 +212,7 @@ function max(obj, pathOrArray) {
             }
         });
     } catch (ex) {
-        return { default: null, msg: ex }; 
+        return { default: 0, msg: ex }; 
     }
     return result;
 }
@@ -231,7 +231,7 @@ function min(obj, pathOrArray) {
             }
         });
     } catch (ex) {
-        return { default: null, msg: ex }; 
+        return { default: 0, msg: ex }; 
     }
     return result;
 }

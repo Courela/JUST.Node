@@ -89,7 +89,7 @@ context('Aggregate Functions', () => {
 
         var result = new JsonTransformer({ evaluationMode: 'fallbackToDefault' }).transform(transformer, input);
 
-        expect(result).to.deep.equal({ sum: null });
+        expect(result).to.deep.equal({ sum: 0 });
     });
 
     it('sum strict error', () => {
@@ -148,7 +148,7 @@ context('Aggregate Functions', () => {
 
         var result = new JsonTransformer({ evaluationMode: 'fallbackToDefault' }).transform(transformer, input);
 
-        expect(result).to.deep.equal({ avg: null });
+        expect(result).to.deep.equal({ avg: 0 });
     });
 
     it('average strict error', () => {
@@ -207,7 +207,7 @@ context('Aggregate Functions', () => {
 
         var result = new JsonTransformer({ evaluationMode: 'fallbackToDefault' }).transform(transformer, input);
 
-        expect(result).to.deep.equal({ min: null });
+        expect(result).to.deep.equal({ min: 0 });
     });
 
     it('min strict error', () => {
@@ -275,7 +275,7 @@ context('Aggregate Functions', () => {
 
         var result = new JsonTransformer({ evaluationMode: 'fallbackToDefault' }).transform(transformer, input);
 
-        expect(result).to.deep.equal({ max: null });
+        expect(result).to.deep.equal({ max: 0 });
     });
 
     it('max strict error', () => {
