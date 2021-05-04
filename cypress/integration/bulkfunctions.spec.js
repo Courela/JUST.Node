@@ -145,4 +145,31 @@ context('Bulk Functions', () => {
 
         expect(() => new JsonTransformer({ }).transform(transformer, input)).to.throw('Invalid function for bulk!');
     });
+
+    it('key function last', () => {
+        const input = '{ "menu": { "id": { "file": "csv" }, "value": { "Window": "popup" }, "popup": { "menuitem": [ { "value": "New", "onclick": { "action": "CreateNewDoc()" } }, { "value": "Open", "onclick": "OpenDoc()" }, { "value": "Close", "onclick": "CloseDoc()" } ], "submenuitem": "CloseSession()" } } }';
+        const transformer = '{ "#": [ "#copy($.menu)", "#delete($.popup)" ], "#eval(#valueof($.menu.id.file))": { "menuitem": [] } }';
+
+        var result = new JsonTransformer().transform(transformer, input);
+
+        expect(result).to.deep.equal({ csv: { menuitem: [] }, id: { file: "csv"}, value: { Window: "popup" }});
+    });
+
+    it('property after bulk', () => {
+        const input = '{ "id": "12345" }';
+        const transformer = '{ "#": [ "#copy($)" ], "idArray": "#valueof($.id)" }';
+
+        var result = new JsonTransformer().transform(transformer, input);
+
+        expect(result).to.deep.equal({ idArray: "12345", id: "12345" });
+    });
+
+    it('sub-property after bulk', () => {
+        const input = '{ "id": "12345" }';
+        const transformer = '{ "#": [ "#copy($)" ], "idArray": [{ "newId": "#valueof($.id)" }] }';
+
+        var result = new JsonTransformer().transform(transformer, input);
+
+        expect(result).to.deep.equal({ idArray: [{ newId: "12345" }], id: "12345" });
+    });
 });
