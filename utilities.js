@@ -6,7 +6,7 @@ function groupArray(arr, groupingElement, groupedElement) {
     if (arr) {
         arr.forEach(eachObj => {
             let groupToken = functions.execute('valueof', [ '$.' + groupingElement ], eachObj, null);
-            if (groupToken)
+            if (groupToken && groupToken.value)
             {
                 let valueOfToken = groupToken.value;
                 if (Object.keys(groupedPair).includes(valueOfToken)) {
@@ -22,6 +22,8 @@ function groupArray(arr, groupingElement, groupedElement) {
                     let newArr = [ clonedObj ];
                     groupedPair[valueOfToken] = newArr;
                 }
+            } else {
+                throw 'Property not found: ' + groupingElement;
             }
         });
     }
@@ -46,7 +48,11 @@ function groupArrayMultipleProperties(array, groupingPropertyNames, groupedPrope
             let groupTokens = [];
 
             groupingPropertyNames.forEach(groupPropertyName => {
-                groupTokens.push(functions.execute('valueof', [ '$.' + groupPropertyName ], eachObj, null).value);
+                let output = functions.execute('valueof', [ '$.' + groupPropertyName ], eachObj, null).value;
+                if (!output) {
+                    throw 'Property not found: ' + groupPropertyName;
+                }
+                groupTokens.push(output);
             });
 
             if (groupTokens.length > 0) {
