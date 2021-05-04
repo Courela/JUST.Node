@@ -40,7 +40,7 @@ context('Math Functions', () => {
         expect(result).to.deep.equal({ mathresult: { divide: 3 }});
     });
 
-    it('round', () => {
+    it('round to zero', () => {
         const input = '{ }';
         const transformer = '{ "result": "#round(0.00154,2)" }';
 
@@ -49,7 +49,7 @@ context('Math Functions', () => {
         expect(result).to.deep.equal({ result: 0.00 });
     });
 
-    it('round', () => {
+    it('round two decimal places', () => {
         const input = '{ }';
         const transformer = '{ "result": "#round(0.01554,2)" }';
 
@@ -58,13 +58,13 @@ context('Math Functions', () => {
         expect(result).to.deep.equal({ result: 0.02 });
     });
 
-    it('round', () => {
+    it('round zero decimal places', () => {
         const input = '{ }';
         const transformer = '{ "result": "#round(0.66489,0)" }';
 
         var result = new JsonTransformer(null).transform(transformer, input);
 
-        expect(result).to.deep.equal({ result: 1.0 });
+        expect(result).to.deep.equal({ result: 1 });
     });
 
     it('equals true', () => {
