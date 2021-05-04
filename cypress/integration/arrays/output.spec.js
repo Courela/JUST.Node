@@ -57,4 +57,13 @@ context('Output', () => {
 
         expect(result).to.deep.equal([[{ OrderId: 123456, SkuId: 357159, Quantity: 12.5 },{ OrderId: 123456, SkuId: 484186, Quantity: 10 }]]);
     });
+
+    it('multiple objects in declared array', () => {
+        const input = '{ "id": "12345", "number": 123 }';
+        const transformer = '{ "idArray": [{ "newId": "#valueof($.id)" }, { "newId": "#valueof($.number)"} ] }';
+
+        var result = new JsonTransformer().transform(transformer, input);
+
+        expect(result).to.deep.equal({ idArray: [{ newId: "12345" }, { newId: 123 }] });
+    });
 });
