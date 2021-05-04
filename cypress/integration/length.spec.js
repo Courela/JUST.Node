@@ -40,6 +40,15 @@ context('Length', () => {
         expect(result).to.deep.equal({ length: 0 });
     });
 
+    it('length fallback to default', () => {
+        const input = '{ }';
+        const transformer = '{ "length": "#length()" }';
+
+        var result = new JsonTransformer({ evaluationMode: 'fallbackToDefault' }).transform(transformer, input);
+
+        expect(result).to.deep.equal({ length: 0 });
+    });
+
     it('not enumerable value strict', () => {
         const input = '{ "numbers": [ 1, 2, 3, 4, 5 ]}';
         const transformer = '{ "length": "#length(#valueof($.numbers[0]))" }';

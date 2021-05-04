@@ -236,7 +236,7 @@ function min(obj, pathOrArray) {
     return result;
 }
 
-function length(obj, s) {
+function length(_obj, s) {
     try {
         if (typeof s.length !== "undefined") {
             return s.length;
