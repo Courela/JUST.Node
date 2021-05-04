@@ -422,11 +422,13 @@ function toInteger(val) {
             result = 1;
         } else if (val && val === 'false') {
             result = 0;
+        } else {
+            result = ensureNumber(result !== null ? result : val);
         }
+        return round(result, 0);
     } catch (ex) {
-        return { default: result, msg: ex }; 
+        return { default: 0, msg: ex }; 
     }
-    return round(Number(result !== null ? result : val), 0);
 }
 
 function toStringJust(val) {

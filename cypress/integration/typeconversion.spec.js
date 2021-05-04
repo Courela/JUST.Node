@@ -139,7 +139,7 @@ context('Type Conversion', () => {
         expect(result).to.deep.equal({ result: 0 });
     });
 
-    it('to integer positiive decimal', () => {
+    it('to integer positive decimal', () => {
         const input = '{ }';
         const transformer = '{ "result": "#tointeger(1.01)" }';
 
@@ -183,6 +183,23 @@ context('Type Conversion', () => {
 
         expect(result).to.deep.equal({ result: 0 });
     });
+
+    it('to integer fallback to default', () => {
+        const input = '{ }';
+        const transformer = '{ "result": "#tointeger(abc)" }';
+
+        var result = new JsonTransformer({ evaluationMode: 'fallbackToDefault' }).transform(transformer, input);
+
+        expect(result).to.deep.equal({ result: 0 });
+    });
+
+    it('to integer strict error', () => {
+        const input = '{ }';
+        const transformer = '{ "result": "#tointeger(abc)" }';
+
+        expect(() => new JsonTransformer({ evaluationMode: 'strict' }).transform(transformer, input)).to.throw('Invalid value!');
+    });
+    
 
     it('to decimal string', () => {
         const input = '{ "value": "0" }';
