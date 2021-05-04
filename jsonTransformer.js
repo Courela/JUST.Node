@@ -119,41 +119,13 @@ class JsonTransformer extends Transformer {
     }
 
     parseArray(arr, inputJson, currentArrayElement) {
-        let result = null;
+        let result = [];
         arr.forEach(el => {
-            if (Object.keys(currentArrayElement).length > 1) {
-                if (result) {
-                    inputJson = result;
-                }
-            }
-
             let output = this.recursiveEvaluate(el, inputJson, currentArrayElement);
-            if (output && output.replaceElement) {
-                if (!result) {
-                    result = {};
-                }
-                result = Object.assign(result, output.result);
-            }
-            else {
-                if (Array.isArray(output)) {
-                    if (result === null) {
-                        result = output;
-                    }
-                    else if (Array.isArray(result)) {
-                        output.forEach(item => result.push(item));
-                    } else {
-                        output.forEach(item => Object.assign(result, item));
-                    }
-                }
-                else {
-                    if (!result) {
-                        result = {};
-                    }
-                    result = Object.assign(result, !output || typeof output.result === 'undefined' ? output : output.result);
-                }
-            }
+            result.push(!output || typeof output.result === 'undefined' ? output : output.result);
+        
         });
-        return result ? result : [];
+        return result ? Array.isArray(result) ? result : [ result ] : [];
     }
 
     parseKeyFunction(key, token, inputJson, currentElementArray) {
