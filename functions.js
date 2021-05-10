@@ -422,10 +422,12 @@ function toInteger(val) {
             result = 1;
         } else if (val && val === 'false') {
             result = 0;
-        } else {
-            result = ensureNumber(result !== null ? result : val);
         }
-        return round(result, 0);
+        result = round(Number(result !== null ? result : val), 0);
+        if (isNaN(result)) {
+            throw 'Invalid value!'
+        }
+        return result;
     } catch (ex) {
         return { default: 0, msg: ex }; 
     }

@@ -205,8 +205,8 @@ context('Loops', () => {
     });
 
     it('loop over root inside another loop', () => {
-        const input = '{ "FlatArray1": [{ "prop1": 1 }, { "prop1": 2 }], "FlatArray2": [{ "foreighId": "654" }, { "foreighId": "123" }] }';
-        const transformer = '{ "ArrayComplex": { "#loop($.FlatArray1,l1)": { "Prop1": "#currentvalueatpath($.prop1)", "ChildArray": { "#loop($.FlatArray2[?(@.foreighId == \'123\')],l2,root)": { "outsideProp": "#currentvalueatpath($.foreighId)" } } } }}';
+        const input = '{ "FlatArray1": [{ "prop1": 1 }, { "prop1": 2 }], "FlatArray2": [{ "foreignId": "654" }, { "foreignId": "123" }] }';
+        const transformer = '{ "ArrayComplex": { "#loop($.FlatArray1)": { "Prop1": "#currentvalueatpath($.prop1)", "ChildArray": { "#loop($.FlatArray2[?(@.foreignId == \'123\')],l2,root)": { "outsideProp": "#currentvalueatpath($.foreignId)" } } } }}';
         
         var result = new JsonTransformer({ evaluationMode: [ 'strict' ]}).transform(transformer, input);
 
