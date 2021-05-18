@@ -23,7 +23,6 @@ context('Readme', () => {
     });
 
     it('string math functions', () => {
-        //TODO concat is empty array instead of null
         const input = '{ "stringref": "thisisandveryunuasualandlongstring", "numbers": [ 1, 2, 3, 4, 5 ] }';
         const transformer = '{ "stringresult": { "lastindexofand": "#lastindexof(#valueof($.stringref),and)", "firstindexofand": "#firstindexof(#valueof($.stringref),and)", "substring": "#substring(#valueof($.stringref),9,11)", "concat": "#concat(#valueof($.menu.id.file),#valueof($.menu.value.Window))", "length_string": "#length(#valueof($.stringref))", "length_array": "#length(#valueof($.numbers))", "length_path": "#length($.numbers)" }, "mathresult": { "add": "#add(#valueof($.numbers[0]),3)", "subtract": "#subtract(#valueof($.numbers[4]),#valueof($.numbers[0]))", "multiply": "#multiply(2,#valueof($.numbers[2]))", "divide": "#divide(9,3)", "round": "#round(10.005,2)" } }';
 
