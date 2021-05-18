@@ -171,17 +171,17 @@ class JsonTransformer extends Transformer {
             return null;
         }
         
-        let result = isPropertyLoop ? {} : [];
+        let result = isPropertyLoop && typeof token !== 'string' ? {} : [];
         if (!Array.isArray(elements) && !Object.keys(elements).length > 0) {
             return elements;
         }
 
-        let loopKeys = Object.keys(token);
-        elements.forEach((el, i) => {
+            let loopKeys = typeof token !== 'string' ? Object.keys(token) : [ token ];
+            elements.forEach((el, i) => {
 
             currentElementArray[alias] = { element: el, index: i };
             
-            if (isPropertyLoop) {
+            if (isPropertyLoop && typeof token !== 'string') {
                 //for loop over properties, properties cannot be string numbers, 
                 //it will convert automatically to numbers 
                 loopKeys.forEach(key => {
@@ -275,7 +275,7 @@ class JsonTransformer extends Transformer {
                 result = functions.execute(functionName, args, inputJson, this.customFunctions, isBulk);
             }
         }
-        return result.isProperty || result.isLoop ? 
+        return !!!result || result.isProperty || result.isLoop ? 
             result : 
             typeof result === 'string' ?
                 result === "#" ?

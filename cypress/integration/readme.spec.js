@@ -86,7 +86,7 @@ context('Readme', () => {
     });
 
     it('nested array looping', () => {
-        //TODO object instead of array on Country
+        //TODO Country is an array with two values, the last one is undefined
         const input = '{ "NestedLoop": { "Organization": { "Employee": [ { "Name": "E2", "Surname": "S2", "Details": [ { "Countries": [ { "Name": "Iceland", "Language": "Icelandic" } ], "Age": 30 } ] }, { "Name": "E1", "Surname": "S1", "Details": [ { "Countries": [{ "Name": "Denmark", "Language": "Danish" }, { "Name": "Greenland", "Language": "Danish" } ], "Age": 31 } ] } ] } } }';
         const transformer = '{ "hello": { "#loop($.NestedLoop.Organization.Employee, employees)": { "CurrentName": "#currentvalueatpath($.Name, employees)", "Details": { "#loop($.Details)": { "Surname": "#currentvalueatpath($.Surname, employees)", "Age": "#currentvalueatpath($.Age)", "Country": { "#loop($.Countries[0], countries)": "#currentvalueatpath($.Name, countries)" } } } } } }';
 
