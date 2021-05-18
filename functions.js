@@ -236,8 +236,11 @@ function min(obj, pathOrArray) {
     return result;
 }
 
-function length(_obj, s) {
+function length(obj, s) {
     try {
+        if (typeof s === "string" && s.startsWith("$")) {
+            s = valueof(obj, s);
+        }
         if (typeof s.length !== "undefined") {
             return s.length;
         }
