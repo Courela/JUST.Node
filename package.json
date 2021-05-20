@@ -14,11 +14,11 @@
     "url": "git+https://github.com/Courela/JUST.Node.git"
   },
   "dependencies": {
-    "jsonpath": "^1.1.0"
+    "jsonpath": "^1.1.1"
   },
   "devDependencies": {
-    "@cypress/code-coverage": "^3.9.4",
-    "cypress": "^6.7.1",
+    "@cypress/code-coverage": "^3.9.5",
+    "cypress": "^6.9.1",
     "nyc": "^15.1.0"
   },
   "bugs": {
