@@ -130,7 +130,6 @@ class JsonTransformer extends Transformer {
 
     parseKeyFunction(key, token, inputJson, currentElementArray) {
         let result = {};
-        let properties = false;
         let isBulk = false;
         let output = this.parseFunction(key, inputJson, currentElementArray);
         if (output || output === 0) {
@@ -138,22 +137,7 @@ class JsonTransformer extends Transformer {
                 return output;
             }
             else if (output.isLoop) {
-                let alias = output.alias ? output.alias : 'loop' + ++this._loopCounter;
-                let elements = null;
-                if (Array.isArray(output.value)) { 
-                    elements = output.value;
-                } else if (output.value && Object.keys(output.value).length > 0) {
-                    elements = Object.entries(output.value).reduce((arr, el) => {
-                            let obj = {};
-                            obj[el[0]] = el[1];
-                            arr.push(obj);
-                            return arr;
-                        }, []);
-                    properties = true;
-                } else {
-                    elements = output.value;
-                }
-                result = this.parseLoop(token, elements, alias, properties, currentElementArray);
+                result = this.parseLoop(token, output, currentElementArray);
             } else if (output.isBulk) {
                 result = this.parseBulk(token, inputJson, currentElementArray);
                 isBulk = true;
@@ -166,7 +150,24 @@ class JsonTransformer extends Transformer {
         return { value: result && result.value ? result.value : result, isProperty: result && result.isProperty ? result.isProperty : false, isLoop: result && result.isLoop ? result.isLoop : false , isBulk };
     }
 
-    parseLoop(token, elements, alias, isPropertyLoop, currentElementArray) {
+    parseLoop(token, output, currentElementArray) {
+        let isPropertyLoop = false;
+        let alias = output.alias ? output.alias : 'loop' + ++this._loopCounter;
+        let elements = null;
+        if (Array.isArray(output.value)) { 
+            elements = output.value;
+        } else if (output.value && Object.keys(output.value).length > 0) {
+            elements = Object.entries(output.value).reduce((arr, el) => {
+                    let obj = {};
+                    obj[el[0]] = el[1];
+                    arr.push(obj);
+                    return arr;
+                }, []);
+            isPropertyLoop = true;
+        } else {
+            elements = output.value;
+        }
+
         if (!elements) {
             return null;
         }
@@ -176,9 +177,8 @@ class JsonTransformer extends Transformer {
             return elements;
         }
 
-            let loopKeys = typeof token !== 'string' ? Object.keys(token) : [ token ];
-            elements.forEach((el, i) => {
-
+        let loopKeys = typeof token !== 'string' ? Object.keys(token) : [ token ];
+        elements.forEach((el, i) => {
             currentElementArray[alias] = { element: el, index: i };
             
             if (isPropertyLoop && typeof token !== 'string') {

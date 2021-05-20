@@ -181,9 +181,7 @@ context('Loops', () => {
 
         var result = new JsonTransformer({ evaluationMode: 'strict' }).transform(transformer, input);
 
-        expect(result).to.deep.equal({ result: { number: "10" } });
-        //TODO one element result in a #valueof is not an array
-        //expect(result).to.deep.equal({ result: [{ number: "10" }] });
+        expect(result).to.deep.equal({ result: [{ number: "10" }] });
     });
 
     it('looping alias', () => {

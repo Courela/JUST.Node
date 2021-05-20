@@ -261,11 +261,13 @@ function loop(obj, path, alias, loopOverAlias, el) {
             loopOverAlias = null;
         }
     }
+    let result = null;
     if (el) {
-        return valueof(calculateAlias(obj, el, loopOverAlias ? loopOverAlias : alias), path);
+        result = valueof(calculateAlias(obj, el, loopOverAlias ? loopOverAlias : alias), path);
     } else {
-        return valueof(obj, path);
+        result = valueof(obj, path);
     }
+    return /\[.+\]$/.test(path) && !Array.isArray(result) ? [ result ] : result;
 }
 
 function applyOver(input, transformerBefore, transformerAfter) {
