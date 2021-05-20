@@ -1,11 +1,12 @@
 {
   "type": "module",
   "name": "@courela/just",
-  "version": "0.0.5-beta",
+  "version": "0.0.6-beta",
   "description": "JUST for node. Transform Json documents using JUST language.",
   "keywords": [
     "json",
-    "xslt"
+    "xslt",
+    "just"
   ],
   "homepage": "https://github.com/WorkMaze/JUST.net",
   "license": "MIT",
