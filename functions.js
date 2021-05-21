@@ -41,16 +41,24 @@ function valueof(obj, path) {
 }
 
 function exists(obj, path, el) {
-    obj = calculateAlias(obj, el);
-    let result = valueof(obj, path);
-    return (!!result && (typeof result === 'string' || (Array.isArray(result) && result.length > 0))) ||
-        (!result && (result === null || typeof result === 'string'));
+    try {
+        obj = calculateAlias(obj, el);
+        let result = valueof(obj, path);
+        return (!!result && (typeof result === 'string' || (Array.isArray(result) && result.length > 0))) ||
+            (!result && (result === null || typeof result === 'string'));
+    } catch (ex) {
+        return { default: false, msg: ex };
+    }
 }
 
 function existsAndNotEmpty(obj, path, el) {
-    obj = calculateAlias(obj, el);
-    let result = valueof(obj, path);
-    return !!result && (typeof result === 'string' || Array.isArray(result)) && result.length > 0;
+    try {
+        obj = calculateAlias(obj, el);
+        let result = valueof(obj, path);
+        return !!result && (typeof result === 'string' || Array.isArray(result)) && result.length > 0;
+    } catch (ex) {
+        return { default: false, msg: ex };
+    }
 }
 
 function concatAllAtPath(obj, arr, path) {
