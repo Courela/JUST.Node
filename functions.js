@@ -249,7 +249,7 @@ function length(obj, s) {
         if (typeof s === "string" && s.startsWith("$")) {
             s = valueof(obj, s);
         }
-        if (typeof s.length !== "undefined") {
+        if (s.length !== undefined) {
             return s.length;
         }
         return { default: 0, msg: 'Value not enumerable: ' + s.toString() };  
@@ -542,6 +542,9 @@ function round(val, decimalPlaces) {
 }
 
 function evalFn(obj) {
+    if (obj === undefined || obj === null) {
+        throw 'Invalid value!'
+    }
     return obj;
 }
 

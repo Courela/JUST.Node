@@ -66,4 +66,11 @@ context('Dynamic Properties', () => {
 
         expect(result).to.deep.equal({ root: [{ name1: "Jim", number1: "0123-4567-8888" },{ name2: "John", number2: "0134523-4567-8910" }] });
     });
+
+    it('empty eval', () => {
+        const input = '{ "tree": { "branch": "leaf", "flower": "rose" } }';
+        const transformer = '{ "result": { "#eval()": "#valueof($.tree.branch)" } }';
+
+        expect(() => new JsonTransformer(null).transform(transformer, input)).to.throw();
+    });
 });
