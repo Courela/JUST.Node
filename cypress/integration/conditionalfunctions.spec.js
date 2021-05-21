@@ -125,7 +125,7 @@ context('IfCondition', () => {
         const input = '{ "Tree": { "Branch": "leaf", "Flower": "Rose" } }';
         const transformer = '{ "Result": { "#ifgroup(#exists($.non_existance))": { "State": { "Value1": "#valueof($.Tree.Branch)", "Value2": "#valueof($.Tree.Flower)" }} } }';
 
-        var result = new JsonTransformer(null).transform(transformer, input);
+        var result = new JsonTransformer({ evaluationMode: 'strict' }).transform(transformer, input);
         
         expect(result).to.deep.equal({ Result: { } });
     });
@@ -158,7 +158,7 @@ context('IfCondition', () => {
     });
 
     it('conditional group non existing with loop inside', () => {
-        const input = '{ "errors": { "account": [ ] } }';
+        const input = '{ }';
         const transformer = '{ "Result": { "#ifgroup(#exists($.errors.account))": { "#loop($.errors.account)": { "ValidationMessage": "#currentvalueatpath($)" } } }, "Other": "property" }';
  
         var result = new JsonTransformer().transform(transformer, input);
