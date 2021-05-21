@@ -70,7 +70,7 @@ function sumAtPath(obj, arr, path) {
     try {
         arr.forEach(el => {
             result += parseInt(valueof(el, path));
-            if (isNaN(result)) {
+            if (!isFinite(result)) {
                 throw 'Invalid value!';
             }
         });
@@ -85,7 +85,7 @@ function averageAtPath(obj, arr, path) {
     try {
         arr.forEach(el => {
             result += parseInt(valueof(el, path));
-            if (isNaN(result)) {
+            if (!isFinite(result)) {
                 throw 'Invalid value!';
             }
         });
@@ -100,7 +100,7 @@ function maxAtPath(obj, arr, path) {
     try {
         arr.forEach(el => {
             let output = parseInt(valueof(el, path));
-            if (isNaN(output)) {
+            if (!isFinite(output)) {
                 throw 'Invalid value!';
             }
             result = result ? Math.max(output, result) : output;
@@ -116,7 +116,7 @@ function minAtPath(obj, arr, path) {
     try {
         arr.forEach(el => {
             let output = parseInt(valueof(el, path));
-            if (isNaN(output)) {
+            if (!isFinite(output)) {
                 throw 'Invalid value!';
             }
             result = result ? Math.min(output, result) : output;
@@ -162,7 +162,7 @@ function concatAll(obj, pathOrArray) {
 
 function ensureNumber(n) {
     let result = parseFloat(n);
-    if (isNaN(result)) {
+    if (!isFinite(result)) {
         throw 'Invalid value!'
     }
     return result;
@@ -369,19 +369,51 @@ function lastIndexOf(str, find) {
 }
 
 function add(n1, n2) {
-    return Number(n1) + Number(n2);
+    try {
+        let result = Number(n1) + Number(n2);
+        if (!isFinite(result)) {
+            throw 'Invalid value!';
+        }
+        return result;
+    } catch (ex) {
+        return { default: 0, msg: ex }
+    }
 }
 
 function subtract(n1, n2) {
-    return Number(n1) - Number(n2);
+    try {
+        let result = Number(n1) - Number(n2);
+        if (!isFinite(result)) {
+            throw 'Invalid value!';
+        }
+        return result;
+    } catch (ex) {
+        return { default: 0, msg: ex }
+    }
 }
 
 function multiply(n1, n2) {
-    return Number(n1) * Number(n2);
+    try {
+        let result = Number(n1) * Number(n2);
+        if (!isFinite(result)) {
+            throw 'Invalid value!';
+        }
+        return result;
+    } catch (ex) {
+        return { default: 0, msg: ex }
+    }
 }
 
 function divide(n1, n2) {
-    return Number(n1) / Number(n2);
+    try {
+        let result = Number(n1) / Number(n2);
+        if (!isFinite(result)) {
+            throw 'Invalid value!';
+        }
+        return result;
+    } catch (ex) {
+        return { default: 0, msg: ex }
+    }
 }
 
 function constantComma() {
@@ -401,23 +433,58 @@ function stringContains(str, find) {
 }
 
 function mathEquals(n1, n2) {
-    return Number(n1) === Number(n2);
+    try {
+        if (!isFinite(n1) || !isFinite(n2)) {
+            throw 'Invalid value!';
+        }
+        return Number(n1) === Number(n2);
+    } catch (ex) {
+        return { default: false, msg: ex }
+    }
 }
 
 function mathGreaterThan(n1, n2) {
-    return Number(n1) > Number(n2);
+    try {
+        if (!isFinite(n1) || !isFinite(n2)) {
+            throw 'Invalid value!';
+        }
+        return Number(n1) > Number(n2);
+    } catch (ex) {
+        return { default: false, msg: ex }
+    }
 }
 
 function mathLessThan(n1 ,n2) {
-    return Number(n1) < Number(n2);
+    try {
+        if (!isFinite(n1) || !isFinite(n2)) {
+            throw 'Invalid value!';
+        }
+        return Number(n1) < Number(n2);
+    } catch (ex) {
+        return { default: false, msg: ex }
+    }
 }
 
 function mathGreaterThanOrEqualTo(n1, n2) {
-    return Number(n1) >= Number(n2);
+    try {
+        if (!isFinite(n1) || !isFinite(n2)) {
+            throw 'Invalid value!';
+        }
+        return Number(n1) >= Number(n2);
+    } catch (ex) {
+        return { default: false, msg: ex }
+    }
 }
 
 function mathLessThanOrEqualTo(n1, n2) {
-    return Number(n1) <= Number(n2);
+    try {
+        if (!isFinite(n1) || !isFinite(n2)) {
+            throw 'Invalid value!';
+        }
+        return Number(n1) <= Number(n2);
+    } catch (ex) {
+        return { default: false, msg: ex }
+    }
 }
 
 function toInteger(val) {
@@ -429,7 +496,7 @@ function toInteger(val) {
             result = 0;
         }
         result = round(Number(result !== null ? result : val), 0);
-        if (isNaN(result)) {
+        if (!isFinite(result)) {
             throw 'Invalid value!'
         }
         return result;
@@ -455,7 +522,15 @@ function toBoolean(val) {
 }
 
 function round(val, decimalPlaces) {
-    return +(Math.round(val + "e+" + decimalPlaces)  + "e-" + decimalPlaces);
+    try {
+        let result = +(Math.round(val + "e+" + decimalPlaces)  + "e-" + decimalPlaces);
+        if (!isFinite(result)) {
+            throw 'Invalid value!';
+        }
+        return result;
+    } catch (ex) {
+        return { default: 0, msg: ex }
+    }
 }
 
 function evalFn(obj) {
