@@ -1,7 +1,7 @@
 {
   "type": "module",
   "name": "@courela/just",
-  "version": "0.0.6-beta",
+  "version": "0.0.7-beta",
   "description": "JUST for node. Transform Json documents using JUST language.",
   "keywords": [
     "json",
