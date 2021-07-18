@@ -306,6 +306,10 @@ let autonomousFunctions = {
     "tointeger": toInteger,
     "tostring": toStringJust,
     "toboolean": toBoolean,
+    "isnumber": isNumber,
+    "isboolean": isBoolean,
+    "isstring": isString,
+    "isarray": isArray,
     "round": round,
     "eval": evalFn
 };
@@ -546,6 +550,22 @@ function evalFn(obj) {
         throw 'Invalid value!'
     }
     return obj;
+}
+
+function isNumber(obj) {
+    return typeof obj === "number"
+}
+
+function isBoolean(obj) {
+    return typeof obj === "boolean"
+}
+
+function isString(obj) {
+    return typeof obj === "string"
+}
+
+function isArray(obj) {
+    return Array.isArray(obj)
 }
 
 let decimalPlacesFunctions = {
