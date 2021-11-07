@@ -580,11 +580,11 @@ let conditionalFunctions = {
     'ifgroup': ifGroup
 };
 
-function ifGroup(val) {
-    if (val !== true && val !== false) {
+function ifGroup(isToInclude, val) {
+    if (isToInclude !== true && isToInclude !== false) {
         throw 'Invalid value!';
     }
-    return val;
+    return val !== undefined ? (isToInclude ? val : undefined) : isToInclude;
 }
 
 let bulkFunctions = {

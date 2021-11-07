@@ -122,7 +122,9 @@ class JsonTransformer extends Transformer {
         let result = [];
         arr.forEach(el => {
             let output = this.recursiveEvaluate(el, inputJson, currentArrayElement);
-            result.push(!output || typeof output.result === 'undefined' ? output : output.result);
+            if (output !== undefined) { 
+                result.push(!output || typeof output.result === 'undefined' ? output : output.result);
+            }
         
         });
         return result ? Array.isArray(result) ? result : [ result ] : [];

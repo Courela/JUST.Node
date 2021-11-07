@@ -1,7 +1,7 @@
 {
   "type": "module",
   "name": "@courela/just",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "JUST for node. Transform Json documents using JUST language.",
   "keywords": [
     "json",
@@ -19,7 +19,7 @@
   },
   "devDependencies": {
     "@cypress/code-coverage": "^3.9.5",
-    "cypress": "^6.9.1",
+    "cypress": "^8.7.0",
     "nyc": "^15.1.0"
   },
   "bugs": {

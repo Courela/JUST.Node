@@ -103,13 +103,22 @@ context('IfCondition', () => {
         expect(result).to.deep.equal({ Result: { Header: "JsonTransform", State: { Value1: "leaf", Value2: "Rose" } } });
     });
 
-    it('conditional group false', () => {
+    it('conditional group single value', () => {
         const input = '{ "Tree": { "Branch": "leaf", "Flower": "Rose" } }';
         const transformer = '{ "Result": { "Header": "JsonTransform", "#ifgroup(#exists($.Tree.Root))": { "State": { "Value1": "#valueof($.Tree.Branch)", "Value2": "#valueof($.Tree.Flower)" } } } }';
 
         var result = new JsonTransformer(null).transform(transformer, input);
 
         expect(result).to.deep.equal({ Result: { Header: "JsonTransform" } });
+    });
+
+    it('conditional group single value', () => {
+        const input = '{ "arr": [ "1234", "5678" ]}';
+        const transformer = '{ "result": [ "#ifgroup(#toboolean(false),#valueof($.arr[0]))", "#ifgroup(#toboolean(true),#valueof($.arr[1]))" ] }';
+
+        var result = new JsonTransformer({ evaluationMode: 'strict' }).transform(transformer, input);
+
+        expect(result).to.deep.equal({ result: [ "5678" ] });
     });
 
     it('conditional group exception', () => {
